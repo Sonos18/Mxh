@@ -4,7 +4,8 @@
  */
 package com.nhs.service;
 
-import com.nhs.pojo.Post;
+import com.nhs.dto.PostDto;
+import com.nhs.pojo.Posts;
 import java.util.List;
 
 /**
@@ -12,6 +13,15 @@ import java.util.List;
  * @author admin
  */
 public interface PostService {
-    List<Post> getPosts();
-    
+
+    List<PostDto> getPosts();
+
+    Posts addPost(PostDto p);
+
+    boolean updatePost(PostDto p,int id);
+
+    PostDto getPostById(int id);
+
+    boolean deletePost(int id);
+
 }

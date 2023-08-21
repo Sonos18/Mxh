@@ -15,7 +15,7 @@
     <body>
         <h1>Hello World!</h1>
     </body>
-    <c:forEach items="posts" var="p">
+    <c:forEach items="${post}" var="p">
         <h1>${p.content}</h1>
     </c:forEach>
 </html>

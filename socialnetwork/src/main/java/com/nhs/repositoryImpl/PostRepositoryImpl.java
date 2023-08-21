@@ -4,10 +4,11 @@
  */
 package com.nhs.repositoryImpl;
 
-import com.nhs.pojo.Post;
+import com.nhs.pojo.Posts;
 import com.nhs.repository.PostRepository;
 import java.util.List;
 import javax.persistence.Query;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -26,10 +27,55 @@ public class PostRepositoryImpl implements PostRepository {
     private LocalSessionFactoryBean factory;
 
     @Override
-    public List<Post> getPosts() {
+    public List<Posts> getPosts() {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("Select p From Post p");
+        Query q = s.createQuery("From Posts");
         return q.getResultList();
+    }
+
+   
+
+    @Override
+    public Posts getPostById(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.get(Posts.class, id);
+    }
+
+    @Override
+    public boolean deletePost(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        try {   
+            Posts p = this.getPostById(id);
+            s.delete(p);
+            return true;
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Posts addPost(Posts post) {
+        Session s = this.factory.getObject().getCurrentSession();
+        try {
+            s.save(post);
+            return post;
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean updatePost(Posts post) {
+        Session s = this.factory.getObject().getCurrentSession();
+        try {
+            s.update(post);
+            return true;
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 
 }

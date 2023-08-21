@@ -1,0 +1,16 @@
+com.nhs.configs.HibernateConfig=org.springframework.stereotype.Component
+com.nhs.configs.SpringSecurityConfig=org.springframework.stereotype.Component
+com.nhs.configs.WebAppContextConfig=org.springframework.stereotype.Component
+com.nhs.controllers.IndexController=org.springframework.stereotype.Component
+com.nhs.controllers.PostController=org.springframework.stereotype.Component
+com.nhs.pojo.Hashtags=javax.persistence.Entity,javax.persistence.Table,javax.xml.bind.annotation.XmlRootElement,javax.persistence.NamedQueries
+com.nhs.pojo.Hashtags_=javax.persistence.metamodel.StaticMetamodel,javax.annotation.processing.Generated
+com.nhs.pojo.Posts=javax.persistence.Entity,javax.persistence.Table,javax.xml.bind.annotation.XmlRootElement,javax.persistence.NamedQueries
+com.nhs.pojo.Posts_=javax.persistence.metamodel.StaticMetamodel,javax.annotation.processing.Generated
+com.nhs.pojo.Users=javax.persistence.Entity,javax.persistence.Table,javax.xml.bind.annotation.XmlRootElement,javax.persistence.NamedQueries
+com.nhs.pojo.Users_=javax.persistence.metamodel.StaticMetamodel,javax.annotation.processing.Generated
+com.nhs.repositoryImpl.HashtagRepositoryImpl=org.springframework.stereotype.Component
+com.nhs.repositoryImpl.PostRepositoryImpl=org.springframework.stereotype.Component
+com.nhs.repositoryImpl.UserRepositoryImpl=org.springframework.stereotype.Component
+com.nhs.serviceImpl.PostServiceImpl=org.springframework.stereotype.Component
+com.nhs.serviceImpl.UserServiceImpl=org.springframework.stereotype.Component

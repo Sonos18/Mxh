@@ -4,6 +4,11 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>com.nhs.pojo.Post</class>
     <class>com.nhs.pojo.User</class>
+    <class>com.nhs.pojo.PostHashtags</class>
+    <class>com.nhs.pojo.Hashtag</class>
+    <class>com.nhs.pojo.Users</class>
+    <class>com.nhs.pojo.Hashtags</class>
+    <class>com.nhs.pojo.Posts</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/mxh?zeroDateTimeBehavior=CONVERT_TO_NULL"/>

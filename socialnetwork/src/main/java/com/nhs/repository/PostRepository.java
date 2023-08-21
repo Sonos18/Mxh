@@ -4,7 +4,7 @@
  */
 package com.nhs.repository;
 
-import com.nhs.pojo.Post;
+import com.nhs.pojo.Posts;
 import java.util.List;
 
 /**
@@ -12,6 +12,14 @@ import java.util.List;
  * @author admin
  */
 public interface PostRepository {
-    List<Post> getPosts();
-    
+
+    List<Posts> getPosts();
+
+    Posts addPost(Posts p);
+
+    boolean updatePost(Posts p);
+
+    Posts getPostById(int id);
+
+    boolean deletePost(int id);
 }

@@ -1,0 +1,138 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.nhs.pojo;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author admin
+ */
+@Entity
+@Table(name = "hashtags")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Hashtags.findAll", query = "SELECT h FROM Hashtags h"),
+    @NamedQuery(name = "Hashtags.findByHashtagId", query = "SELECT h FROM Hashtags h WHERE h.hashtagId = :hashtagId"),
+    @NamedQuery(name = "Hashtags.findByHashtagText", query = "SELECT h FROM Hashtags h WHERE h.hashtagText = :hashtagText"),
+    @NamedQuery(name = "Hashtags.findByCreatedAt", query = "SELECT h FROM Hashtags h WHERE h.createdAt = :createdAt")})
+public class Hashtags implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "hashtag_id")
+    private Integer hashtagId;
+    @Size(max = 255)
+    @Column(name = "hashtag_text")
+    private String hashtagText;
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+    @ManyToMany(mappedBy = "hashtagsSet")
+    private Set<Posts> postsSet;
+    @JoinColumn(name = "post_id", referencedColumnName = "post_id")
+    @ManyToOne
+    private Posts postId;
+
+    public Hashtags() {
+    }
+
+    public Hashtags(Integer hashtagId) {
+        this.hashtagId = hashtagId;
+    }
+
+    public Hashtags(String hashtagText) {
+        this.hashtagText = hashtagText;
+    }
+    
+
+    public Integer getHashtagId() {
+        return hashtagId;
+    }
+
+    public void setHashtagId(Integer hashtagId) {
+        this.hashtagId = hashtagId;
+    }
+
+    public String getHashtagText() {
+        return hashtagText;
+    }
+
+    public void setHashtagText(String hashtagText) {
+        this.hashtagText = hashtagText;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @XmlTransient
+    public Set<Posts> getPostsSet() {
+        return postsSet;
+    }
+
+    public void setPostsSet(Set<Posts> postsSet) {
+        this.postsSet = postsSet;
+    }
+
+    public Posts getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Posts postId) {
+        this.postId = postId;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (hashtagId != null ? hashtagId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Hashtags)) {
+            return false;
+        }
+        Hashtags other = (Hashtags) object;
+        if ((this.hashtagId == null && other.hashtagId != null) || (this.hashtagId != null && !this.hashtagId.equals(other.hashtagId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "com.nhs.pojo.Hashtags[ hashtagId=" + hashtagId + " ]";
+    }
+    
+}
