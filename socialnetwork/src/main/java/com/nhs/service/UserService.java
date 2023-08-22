@@ -5,7 +5,9 @@
 package com.nhs.service;
 
 import com.nhs.pojo.Users;
+import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -18,4 +20,7 @@ public interface UserService extends UserDetailsService {
     Users getUserByUsername(String username);
 
     Users addUser(Users user);
+
+    Users addUsers(Map<String, String> params, MultipartFile file);
+
 }

@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.nhs.repositoryImpl;
+package com.nhs.repository.Impl;
 
-import com.nhs.pojo.Users;
-import com.nhs.repository.UserRepository;
+
+import com.nhs.pojo.Hashtags;
+import com.nhs.repository.HashtagRepository;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -20,35 +21,35 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class UserRepositoryImpl implements UserRepository {
+public class HashtagRepositoryImpl implements HashtagRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
 
     @Override
-    public Users getUserByID(int id) {
+    public Hashtags getHashtagByText(String text) {
         Session s = this.factory.getObject().getCurrentSession();
-        return s.get(Users.class, id);
+        Query q = s.createQuery("From Hashtags Where text=:text");
+        q.setParameter("text", text);
+        return (Hashtags) q.getSingleResult();
     }
 
     @Override
-    public Users getUserByUsername(String username) {
-        Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From Users Where username=:un");
-        q.setParameter("un", username);
-        return (Users) q.getSingleResult();
-    }
-
-    @Override
-    public Users addUser(Users user) {
+    public boolean addHashtag(String text) {
+        Hashtags h = new Hashtags(text);
         Session s = this.factory.getObject().getCurrentSession();
         try {
-                s.save(user);
-            return user;
+            s.save(h);
+            return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();
+            return false;
         }
-        return null;
+    }
+
+    @Override
+    public boolean checkHastag(String text) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 }

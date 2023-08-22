@@ -21,8 +21,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 /**
  *
@@ -38,7 +41,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private Environment env;
-
+    
+    
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -48,38 +52,27 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.userDetailsService(userDetailsService);
-//                .passwordEncoder(passwordEncoder());
-    }
-
-    /**
-     *
-     * @param http
-     * @throws Exception
-     */
-    @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable();
+
         http.formLogin()
                 .usernameParameter("username")
                 .passwordParameter("password");
+        
 
         http.formLogin().defaultSuccessUrl("/")
-                .failureUrl("/login?error");
+                .failureUrl("/login/?error");
 
-        http.logout().logoutSuccessUrl("/login");
+        http.exceptionHandling().accessDeniedPage("/login/?accessDenied");
 
-        http.exceptionHandling()
-                .accessDeniedPage("/login?accessDenied");
-
-//        http.authorizeRequests().antMatchers("/").permitAll()
-//                .antMatchers("/**/add")
-//                .access("hasRole('ROLE_ADMIN')")
-//                .antMatchers("/**/pay")
-//                .access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')");
         http.csrf().disable();
     }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            auth.userDetailsService(userDetailsService).
+                    passwordEncoder(passwordEncoder());
+        }
 
     @Bean
     public Cloudinary cloudinary() {
@@ -93,8 +86,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public SimpleDateFormat simpleDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd");
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver
+                = new CommonsMultipartResolver();
+
+        resolver.setDefaultEncoding("UTF-8");
+        return resolver;
     }
+
+  
 
 }
