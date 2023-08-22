@@ -7,7 +7,11 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
+<<<<<<< Updated upstream
 @Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2023-08-22T00:20:42", comments="EclipseLink-2.7.7.v20200504-rNA")
+=======
+@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2023-08-22T13:21:11", comments="EclipseLink-2.7.7.v20200504-rNA")
+>>>>>>> Stashed changes
 @StaticMetamodel(Users.class)
 public class Users_ { 
 
