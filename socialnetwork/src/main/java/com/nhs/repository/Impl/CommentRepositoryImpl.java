@@ -4,9 +4,10 @@
  */
 package com.nhs.repository.Impl;
 
-import com.nhs.pojo.Hashtags;
-import com.nhs.repository.HashtagRepository;
-import javax.persistence.NoResultException;
+import com.nhs.pojo.Comments;
+import com.nhs.pojo.Posts;
+import com.nhs.repository.CommentRepository;
+import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -17,33 +18,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
-@Repository
 @Transactional
-public class HashtagRepositoryImpl implements HashtagRepository {
+@Repository
+public class CommentRepositoryImpl implements CommentRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
 
     @Override
-    public Hashtags getHashtagByText(String text) {
+    public List<Comments> getCommentsForPost(int postID) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From Hashtags Where hashtagText=:text");
-        q.setParameter("text", text);
-        try {
-            return (Hashtags) q.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
+        Posts post = s.get(Posts.class, postID);
+        Query q = s.createQuery("FROM Comments c WHERE c.postId = :post");
+        q.setParameter("post", post);
+        return q.getResultList();
     }
 
     @Override
-    public boolean addHashtag(String h) {
-        Hashtags hash = new Hashtags(h);
+    public boolean createComment(Comments comment) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
-            s.save(hash);
+            s.save(comment);
             return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();
@@ -52,16 +49,28 @@ public class HashtagRepositoryImpl implements HashtagRepository {
     }
 
     @Override
-    public boolean checkHastag(String text) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean deleteComment(Comments comment) {
+        Session s = this.factory.getObject().getCurrentSession();
+        try {
+            s.delete(comment);
+            return true;
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public Hashtags getHashtagByID(Integer id) {
+    public boolean updateComment(Comments comment) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From Hashtags Where hashtag_id=:id");
-        q.setParameter("id", id);
-        return (Hashtags) q.getSingleResult();
+        try {
+            s.update(comment);
+            return true;
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+            return false;
+        }
     }
+
 
 }

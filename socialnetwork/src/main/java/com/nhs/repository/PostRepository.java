@@ -5,6 +5,7 @@
 package com.nhs.repository;
 
 import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import java.util.List;
 
 /**
@@ -22,4 +23,9 @@ public interface PostRepository {
     Posts getPostById(int id);
 
     boolean deletePost(int id);
+
+    List<String> getHashtagTextsForPost(int postId);
+
+    List<Posts> getPostsForUser(Users user);
+
 }

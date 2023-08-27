@@ -4,12 +4,15 @@
  */
 package com.nhs.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
 @Entity
 @Table(name = "posts")
@@ -40,11 +43,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Posts.findByContent", query = "SELECT p FROM Posts p WHERE p.content = :content"),
     @NamedQuery(name = "Posts.findByCreatedAt", query = "SELECT p FROM Posts p WHERE p.createdAt = :createdAt"),
     @NamedQuery(name = "Posts.findByUpdatedAt", query = "SELECT p FROM Posts p WHERE p.updatedAt = :updatedAt"),
-    @NamedQuery(name = "Posts.findByImage", query = "SELECT p FROM Posts p WHERE p.image = :image")})
+    @NamedQuery(name = "Posts.findByImage", query = "SELECT p FROM Posts p WHERE p.image = :image"),
+    @NamedQuery(name = "Posts.findByIsLocked", query = "SELECT p FROM Posts p WHERE p.isLocked = :isLocked")})
 public class Posts implements Serializable {
-
-    @Column(name = "isLocked")
-    private Boolean isLocked;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -64,23 +65,28 @@ public class Posts implements Serializable {
     @Size(max = 255)
     @Column(name = "image")
     private String image;
+    @Column(name = "isLocked")
+    private Boolean isLocked;
     @JoinTable(name = "post_hashtags", joinColumns = {
         @JoinColumn(name = "post_id", referencedColumnName = "post_id")}, inverseJoinColumns = {
         @JoinColumn(name = "hashtag_id", referencedColumnName = "hashtag_id")})
     @ManyToMany
     private Set<Hashtags> hashtagsSet;
-    @OneToMany(mappedBy = "postId")
-    private Set<Hashtags> hashtagsSet1;
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @ManyToOne
     private Users userId;
+    @JsonIgnore
+    @OneToMany(mappedBy = "postId",fetch = FetchType.LAZY)
+    private Set<Comments> commentsSet;
+    @OneToMany(mappedBy = "postId")
+    private Set<Likes> likesSet;
 
     public Posts() {
     }
 
-    public Posts(String content, String image) {
+    public Posts(String content, String file) {
         this.content = content;
-        this.image = image;
+        this.image = file;
     }
 
     public Posts(Integer postId) {
@@ -127,6 +133,14 @@ public class Posts implements Serializable {
         this.image = image;
     }
 
+    public Boolean getIsLocked() {
+        return isLocked;
+    }
+
+    public void setIsLocked(Boolean isLocked) {
+        this.isLocked = isLocked;
+    }
+
     @XmlTransient
     public Set<Hashtags> getHashtagsSet() {
         return hashtagsSet;
@@ -134,15 +148,6 @@ public class Posts implements Serializable {
 
     public void setHashtagsSet(Set<Hashtags> hashtagsSet) {
         this.hashtagsSet = hashtagsSet;
-    }
-
-    @XmlTransient
-    public Set<Hashtags> getHashtagsSet1() {
-        return hashtagsSet1;
-    }
-
-    public void setHashtagsSet1(Set<Hashtags> hashtagsSet1) {
-        this.hashtagsSet1 = hashtagsSet1;
     }
 
     public Users getUserId() {
@@ -178,12 +183,22 @@ public class Posts implements Serializable {
         return "com.nhs.pojo.Posts[ postId=" + postId + " ]";
     }
 
-    public Boolean getIsLocked() {
-        return isLocked;
+    @XmlTransient
+    public Set<Comments> getCommentsSet() {
+        return commentsSet;
     }
 
-    public void setIsLocked(Boolean isLocked) {
-        this.isLocked = isLocked;
+    public void setCommentsSet(Set<Comments> commentsSet) {
+        this.commentsSet = commentsSet;
     }
-    
+
+    @XmlTransient
+    public Set<Likes> getLikesSet() {
+        return likesSet;
+    }
+
+    public void setLikesSet(Set<Likes> likesSet) {
+        this.likesSet = likesSet;
+    }
+
 }

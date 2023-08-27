@@ -33,6 +33,7 @@ const Home = () => {
                 src={p.file}
                 class="object-cover w-full max-h-40"
               />
+
               <div class="w-full p-4 bg-white dark:bg-gray-800">
                 <p class="font-medium text-indigo-500 text-md">Article</p>
                 <p class="mb-2 text-xl font-medium text-gray-800 dark:text-white">
@@ -41,6 +42,15 @@ const Home = () => {
                 <p class="font-light text-gray-400 dark:text-gray-300 text-md">
                   {p.content}
                 </p>
+                <div class="flex flex-wrap items-center mt-4 justify-starts">
+                  {p.hashtags.map((h)=>(
+                      <div class="text-xs mr-2 py-1.5 px-4 text-gray-600 bg-blue-100 rounded-2xl">
+                        #{h}
+                      </div>
+                  ))}
+                  
+                  
+                </div>
                 <div class="flex items-center mt-4">
                   <a href="#" class="relative block">
                     <img
@@ -54,6 +64,7 @@ const Home = () => {
                     <p class="text-gray-400 dark:text-gray-300">{p.createAt}</p>
                   </div>
                 </div>
+
               </div>
             </a>
           </div>

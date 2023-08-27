@@ -4,10 +4,7 @@
  */
 package com.nhs.dto;
 
-import java.util.ArrayList;
-import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,22 +12,21 @@ import lombok.NoArgsConstructor;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostDto {
-    
-    private Integer id;
+public class CommentDto {
+
+    private Integer commentId;
+  
     private Date createAt;
-    private String content;
-    private String file;
-    private Boolean isLocked;
-    private Integer userId;
-    private MultipartFile imgFile;
-    private List<String> hashtags;
-    private Long like;
     
+    private String content;
+
+    private Integer postId;
+    
+    private String user;
 }

@@ -4,12 +4,23 @@
  */
 package com.nhs.repository.Impl;
 
+import com.nhs.pojo.Hashtags;
 import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import com.nhs.repository.PostRepository;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -23,6 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PostRepositoryImpl implements PostRepository {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -31,9 +45,23 @@ public class PostRepositoryImpl implements PostRepository {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("From Posts");
         return q.getResultList();
+
     }
 
-   
+    public List<String> getHashtagTextsForPost(int postId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<String> query = builder.createQuery(String.class);
+
+        Root<Posts> postRoot = query.from(Posts.class);
+        Join<Posts, Hashtags> hashtagsJoin = postRoot.join("hashtagsSet");
+        query.select(hashtagsJoin.get("hashtagText")).distinct(true);
+        query.where(builder.equal(postRoot.get("postId"), postId));
+
+        List<String> hashtags = session.createQuery(query).getResultList();
+
+        return hashtags;
+    }
 
     @Override
     public Posts getPostById(int id) {
@@ -44,7 +72,7 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public boolean deletePost(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        try {   
+        try {
             Posts p = this.getPostById(id);
             s.delete(p);
             return true;
@@ -76,6 +104,14 @@ public class PostRepositoryImpl implements PostRepository {
             ex.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Posts> getPostsForUser(Users user) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createQuery("From Posts Where userId=:us");
+        q.setParameter("us", user);
+        return q.getResultList();
     }
 
 }

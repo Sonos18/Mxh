@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -37,11 +38,12 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @ComponentScan(basePackages = {
     "com.nhs.*"
 })
+@Order(2)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private Environment env;
-    
+
     
     @Autowired
     private UserDetailsService userDetailsService;
@@ -51,6 +53,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
@@ -58,21 +66,21 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()
                 .usernameParameter("username")
                 .passwordParameter("password");
-        
 
         http.formLogin().defaultSuccessUrl("/")
                 .failureUrl("/login/?error");
 
         http.exceptionHandling().accessDeniedPage("/login/?accessDenied");
 
+
         http.csrf().disable();
     }
 
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userDetailsService).
-                    passwordEncoder(passwordEncoder());
-        }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).
+                passwordEncoder(passwordEncoder());
+    }
 
     @Bean
     public Cloudinary cloudinary() {
@@ -94,6 +102,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return resolver;
     }
 
-  
+
 
 }

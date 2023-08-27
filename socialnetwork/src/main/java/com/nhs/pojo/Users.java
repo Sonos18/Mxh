@@ -4,6 +4,7 @@
  */
 package com.nhs.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
 @Entity
 @Table(name = "users")
@@ -41,6 +42,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByAvatar", query = "SELECT u FROM Users u WHERE u.avatar = :avatar"),
     @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt")})
 public class Users implements Serializable {
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "userId")
+    private Set<Comments> commentsSet;
+    @JsonIgnore
+    @OneToMany(mappedBy = "userId")
+    private Set<Likes> likesSet;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -73,6 +81,7 @@ public class Users implements Serializable {
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    @JsonIgnore
     @OneToMany(mappedBy = "userId")
     private Set<Posts> postsSet;
 
@@ -178,6 +187,24 @@ public class Users implements Serializable {
     @Override
     public String toString() {
         return "com.nhs.pojo.Users[ userId=" + userId + " ]";
+    }
+
+    @XmlTransient
+    public Set<Comments> getCommentsSet() {
+        return commentsSet;
+    }
+
+    public void setCommentsSet(Set<Comments> commentsSet) {
+        this.commentsSet = commentsSet;
+    }
+
+    @XmlTransient
+    public Set<Likes> getLikesSet() {
+        return likesSet;
+    }
+
+    public void setLikesSet(Set<Likes> likesSet) {
+        this.likesSet = likesSet;
     }
     
 }

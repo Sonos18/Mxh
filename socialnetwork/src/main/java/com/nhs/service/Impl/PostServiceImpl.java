@@ -5,33 +5,37 @@
 package com.nhs.service.Impl;
 
 import com.cloudinary.Cloudinary;
-import com.nhs.dto.PostDto;
-import com.nhs.repository.PostRepository;
-import com.nhs.service.PostService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.cloudinary.utils.ObjectUtils;
+import com.nhs.dto.PostDto;
 import com.nhs.pojo.Hashtags;
 import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import com.nhs.repository.HashtagRepository;
+import com.nhs.repository.LikeRepository;
+import com.nhs.repository.PostRepository;
+import com.nhs.service.PostService;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
 @Service
 public class PostServiceImpl implements PostService {
 
     @Autowired
     private Cloudinary cloudinary;
-
+    @Autowired
+    private LikeRepository likeRepository;
     @Autowired
     private PostRepository postRepository;
 
@@ -50,15 +54,21 @@ public class PostServiceImpl implements PostService {
 
     //Done
     @Override
-    public boolean deletePost(int id) {
-        return this.postRepository.deletePost(id);
+    public boolean deletePost(int id, Users user) {
+//        Posts post = this.postRepository.getPostById(id);
+//        if (post == null) {
+//            return false;
+//        }
+//        if(post.getUserId().getUserId() == user.getUserId())
+//        {
+//            return this.postRepository.deletePost(id);
+//        }
+        return false;
     }
 
     @Override
-    @Transactional
-    public Posts addPost(PostDto postDto) {
-        System.out.println(postDto.getImgFile());
-        if (!postDto.getImgFile().isEmpty()) {
+    public Posts addPost(PostDto postDto, Users user) {
+        if (postDto.getImgFile() != null && !postDto.getImgFile().isEmpty()) {
             try {
                 Map res = this.cloudinary.uploader().upload(postDto.getImgFile().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
                 postDto.setFile(res.get("secure_url").toString());
@@ -66,20 +76,19 @@ public class PostServiceImpl implements PostService {
                 Logger.getLogger(PostServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        Posts p = new Posts( postDto.getContent(),postDto.getFile());
-        if (postDto.getHashTags().size() > 0) {
-            Hashtags h = new Hashtags("");
-            for (String hString : postDto.getHashTags()) {
-                h = hashtagRepository.getHashtagByText(hString);
-                if (h == null) {
+
+        Posts p = new Posts(postDto.getContent(), postDto.getFile());
+        if (postDto.getHashtags().size() > 0) {
+            Set<Hashtags> hashtagses = new HashSet<>();
+            for (String hString : postDto.getHashtags()) {
+                if (hashtagRepository.getHashtagByText(hString) == null) {
                     hashtagRepository.addHashtag(hString);
-                    h = hashtagRepository.getHashtagByText(hString);
-                    p.getHashtagsSet().add(h);
                 }
+                hashtagses.add(hashtagRepository.getHashtagByText(hString));
             }
+            p.setHashtagsSet(hashtagses);
         }
-        
-        
+        p.setUserId(user);
         return postRepository.addPost(p);
 
     }
@@ -96,6 +105,8 @@ public class PostServiceImpl implements PostService {
                     .file(p.getImage())
                     .userId(p.getUserId().getUserId())
                     .createAt(p.getCreatedAt())
+                    .hashtags(this.postRepository.getHashtagTextsForPost(p.getPostId()))
+                    .like(this.likeRepository.likeofPost(p.getPostId()))
                     .build();
             postDtos.add(postDto);
         });
@@ -111,8 +122,34 @@ public class PostServiceImpl implements PostService {
                 .content(p.getContent())
                 .userId(p.getUserId().getUserId())
                 .createAt(p.getCreatedAt())
+                .hashtags(this.postRepository.getHashtagTextsForPost(id))
                 .build();
         return postDto;
+    }
+
+    @Override
+    public Hashtags addH(String h) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public List<PostDto> getPostsForUser(Users user) {
+        List<Posts> posts = this.postRepository.getPostsForUser(user);
+        List<PostDto> postDtos = new ArrayList<>();
+        posts.forEach(p -> {
+            PostDto postDto = PostDto.builder()
+                    .id(p.getPostId())
+                    .isLocked(p.getIsLocked())
+                    .content(p.getContent())
+                    .file(p.getImage())
+                    .userId(p.getUserId().getUserId())
+                    .createAt(p.getCreatedAt())
+                    .hashtags(this.postRepository.getHashtagTextsForPost(p.getPostId()))
+                    .like(this.likeRepository.likeofPost(p.getPostId()))
+                    .build();
+            postDtos.add(postDto);
+        });
+        return postDtos;
     }
 
 }

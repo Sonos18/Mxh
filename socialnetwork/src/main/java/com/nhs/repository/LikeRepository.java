@@ -4,19 +4,14 @@
  */
 package com.nhs.repository;
 
-import com.nhs.pojo.Hashtags;
+import com.nhs.pojo.Likes;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
-public interface HashtagRepository {
-
-    Hashtags getHashtagByText(String text);
-
-    Hashtags getHashtagByID(Integer id);
-
-    boolean addHashtag(String h);
-
-    boolean checkHastag(String text);
+public interface LikeRepository {
+    Long likeofPost(int postID);
+    boolean like(Likes l);
+    boolean disLike(int postID);
 }

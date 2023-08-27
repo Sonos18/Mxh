@@ -5,7 +5,9 @@
 package com.nhs.service;
 
 import com.nhs.dto.PostDto;
+import com.nhs.pojo.Hashtags;
 import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import java.util.List;
 
 /**
@@ -16,12 +18,15 @@ public interface PostService {
 
     List<PostDto> getPosts();
 
-    Posts addPost(PostDto p);
+    Posts addPost(PostDto p,Users user);
 
     boolean updatePost(PostDto p,int id);
 
     PostDto getPostById(int id);
 
-    boolean deletePost(int id);
+    boolean deletePost(int id, Users user);
+    
+    Hashtags addH(String h);
 
+    List<PostDto> getPostsForUser(Users user);
 }

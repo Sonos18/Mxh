@@ -13,9 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -27,7 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
 @Entity
 @Table(name = "hashtags")
@@ -53,9 +51,6 @@ public class Hashtags implements Serializable {
     private Date createdAt;
     @ManyToMany(mappedBy = "hashtagsSet")
     private Set<Posts> postsSet;
-    @JoinColumn(name = "post_id", referencedColumnName = "post_id")
-    @ManyToOne
-    private Posts postId;
 
     public Hashtags() {
     }
@@ -64,10 +59,9 @@ public class Hashtags implements Serializable {
         this.hashtagId = hashtagId;
     }
 
-    public Hashtags(String hashtagText) {
-        this.hashtagText = hashtagText;
+    public Hashtags(String h) {
+        this.hashtagText = h;
     }
-    
 
     public Integer getHashtagId() {
         return hashtagId;
@@ -102,14 +96,6 @@ public class Hashtags implements Serializable {
         this.postsSet = postsSet;
     }
 
-    public Posts getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Posts postId) {
-        this.postId = postId;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -134,5 +120,5 @@ public class Hashtags implements Serializable {
     public String toString() {
         return "com.nhs.pojo.Hashtags[ hashtagId=" + hashtagId + " ]";
     }
-    
+
 }
