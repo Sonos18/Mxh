@@ -5,6 +5,8 @@
 package com.nhs.repository;
 
 import com.nhs.pojo.Comments;
+import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import java.util.List;
 
 /**
@@ -14,6 +16,8 @@ import java.util.List;
 public interface CommentRepository {
     List<Comments> getCommentsForPost(int postID);
     boolean createComment(Comments comment);
-    boolean deleteComment(Comments comemnt);
+    boolean deleteComment(int comemntID,Posts post, Users user);
     boolean updateComment(Comments comment);
+    Comments getCommentByID(int id);
+    Comments checkComment(int comemntID, Posts post, Users user);
 }

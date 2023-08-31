@@ -2,18 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.nhs.service;
+package com.nhs.repository;
 
-import com.nhs.pojo.Likes;
-import com.nhs.pojo.Users;
+import com.nhs.pojo.Products;
 
 /**
  *
  * @author DELL
  */
-public interface LikeService {
-
-    boolean like(int postID,Users user);
-
-    boolean disLike(int postID);
+public interface ProductRepository {
+    Products getProductByID(int id);
+    Products createProduct(Products pro);
 }

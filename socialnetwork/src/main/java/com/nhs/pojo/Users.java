@@ -43,6 +43,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt")})
 public class Users implements Serializable {
 
+    @OneToMany(mappedBy = "userId")
+    private Set<Notifications> notificationsSet;
+
+    @OneToMany(mappedBy = "winnerUserId")
+    private Set<Auction> auctionSet;
+
     @JsonIgnore
     @OneToMany(mappedBy = "userId")
     private Set<Comments> commentsSet;
@@ -205,6 +211,24 @@ public class Users implements Serializable {
 
     public void setLikesSet(Set<Likes> likesSet) {
         this.likesSet = likesSet;
+    }
+
+    @XmlTransient
+    public Set<Auction> getAuctionSet() {
+        return auctionSet;
+    }
+
+    public void setAuctionSet(Set<Auction> auctionSet) {
+        this.auctionSet = auctionSet;
+    }
+
+    @XmlTransient
+    public Set<Notifications> getNotificationsSet() {
+        return notificationsSet;
+    }
+
+    public void setNotificationsSet(Set<Notifications> notificationsSet) {
+        this.notificationsSet = notificationsSet;
     }
     
 }

@@ -71,18 +71,38 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public boolean deleteComment(int commentID, int postID) {
-        return false;
+    public boolean deleteComment(int commentID, int postID, Users user) {
+        Comments comment = this.commentRepository.getCommentByID(commentID);
+        Posts posts = this.postRepository.getPostById(postID);
+        if (comment == null || posts == null) {
+            return false;
+        }
+        return this.commentRepository.deleteComment(commentID, posts, user);
     }
 
     @Override
-    public boolean updateComment(CommentDto commentDto, int postID) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean updateComment(CommentDto commentDto, int postID,Users user) {
+        Posts post=this.postRepository.getPostById(postID);
+        Comments c=this.commentRepository.checkComment(commentDto.getCommentId(), post, user);
+        if (c==null)
+            return false;
+        c.setContent(commentDto.getContent());
+        return this.commentRepository.updateComment(c);
     }
 
     @Override
-    public CommentDto replyComment(PostDto postDto, int commentID, int postID) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean replyComment(CommentDto commentDto, int commentID, int postID,Users user) {
+        Posts post=this.postRepository.getPostById(postID);
+        Comments com=this.commentRepository.getCommentByID(commentID);
+        if(post==null||com==null)
+            return false;
+        Comments comment=new Comments();
+        comment.setContent(commentDto.getContent());
+        comment.setPostId(post);
+        comment.setParentCommentId(com);
+        comment.setUserId(user);
+        return this.commentRepository.createComment(comment);
+        
     }
 
 }

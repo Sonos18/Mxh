@@ -6,6 +6,7 @@ package com.nhs.repository.Impl;
 
 import com.nhs.pojo.Comments;
 import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import com.nhs.repository.CommentRepository;
 import java.util.List;
 import javax.persistence.Query;
@@ -49,10 +50,15 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public boolean deleteComment(Comments comment) {
+    public boolean deleteComment(int comemntID, Posts post, Users user) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
-            s.delete(comment);
+            Query query = s.createQuery("DELETE FROM Comments WHERE postId = :postId AND userId=:user AND commentId=:comemntID");
+            query.setParameter("comemntID", comemntID);
+            query.setParameter("postId", post);
+            query.setParameter("user", user);
+            if(query.executeUpdate()<=0)
+                return false;
             return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();
@@ -72,5 +78,24 @@ public class CommentRepositoryImpl implements CommentRepository {
         }
     }
 
-
+    @Override
+    public Comments getCommentByID(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.get(Comments.class, id);
+    }
+    
+    @Override
+    public Comments checkComment(int comemntID, Posts post, Users user) {
+        Session s = this.factory.getObject().getCurrentSession();
+        try {
+            Query query = s.createQuery("FROM Comments WHERE postId = :postId AND userId=:user AND commentId=:comemntID");
+            query.setParameter("comemntID", comemntID);
+            query.setParameter("postId", post);
+            query.setParameter("user", user);
+            return (Comments) query.getSingleResult();
+        } catch (HibernateException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }

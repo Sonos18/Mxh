@@ -2,18 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.nhs.service;
+package com.nhs.repository;
 
-import com.nhs.pojo.Likes;
+import com.nhs.pojo.Notifications;
 import com.nhs.pojo.Users;
+import java.util.List;
 
 /**
  *
  * @author DELL
  */
-public interface LikeService {
+public interface NotificationRepository {
 
-    boolean like(int postID,Users user);
+    Notifications createNotification(Notifications not);
 
-    boolean disLike(int postID);
+    List<Notifications> getNotificationForUser(Users user);
 }

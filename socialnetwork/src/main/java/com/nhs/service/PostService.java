@@ -20,13 +20,15 @@ public interface PostService {
 
     Posts addPost(PostDto p,Users user);
 
-    boolean updatePost(PostDto p,int id);
+    Posts updatePost(PostDto p,int id);
 
     PostDto getPostById(int id);
 
     boolean deletePost(int id, Users user);
     
-    Hashtags addH(String h);
+    boolean isLocked(int postID,int userID);
 
     List<PostDto> getPostsForUser(Users user);
+    
+    PostDto toPostDto(Posts p);
 }

@@ -4,9 +4,11 @@
  */
 package com.nhs.controllers;
 
+import com.nhs.dto.NotificationDto;
 import com.nhs.dto.loginDto;
 import com.nhs.pojo.Users;
 import com.nhs.security.JwtService;
+import com.nhs.service.NotificationService;
 import com.nhs.service.PostService;
 import com.nhs.service.UserService;
 import java.security.Principal;
@@ -37,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author ADMIN
  */
+
 @RestController
 public class UserController {
 
@@ -51,6 +54,9 @@ public class UserController {
     
     @Autowired
     private PostService postService;
+    
+    @Autowired
+    private NotificationService notSer;
 
     @PostMapping(path = "/register/",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
@@ -103,6 +109,17 @@ public class UserController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = UserService.getUserByUsername(userDetails.getUsername());
             return new ResponseEntity<>(this.postService.getPostsForUser(currentUser),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    @GetMapping("/users/notifications/")
+    @CrossOrigin
+    public ResponseEntity<?> getNotificationForUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = UserService.getUserByUsername(userDetails.getUsername());
+            return new ResponseEntity<>(this.notSer.getNotificationForUser(currentUser),HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }

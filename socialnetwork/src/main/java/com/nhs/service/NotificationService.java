@@ -4,16 +4,16 @@
  */
 package com.nhs.service;
 
-import com.nhs.pojo.Likes;
+import com.nhs.dto.NotificationDto;
+import com.nhs.pojo.Posts;
 import com.nhs.pojo.Users;
+import java.util.List;
 
 /**
  *
  * @author DELL
  */
-public interface LikeService {
-
-    boolean like(int postID,Users user);
-
-    boolean disLike(int postID);
+public interface NotificationService {
+    boolean createNotification(Posts post,String action,Users user);
+    List<NotificationDto> getNotificationForUser(Users user);
 }

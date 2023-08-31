@@ -8,9 +8,11 @@ import com.nhs.dto.PostDto;
 import com.nhs.pojo.Hashtags;
 import com.nhs.pojo.Posts;
 import com.nhs.pojo.Users;
+import com.nhs.service.LikeService;
 import com.nhs.service.PostService;
 import com.nhs.service.UserService;
 import java.util.List;
+import javax.ejb.PostActivate;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -49,14 +51,17 @@ public class PostController {
     private PostService postService;
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private LikeService likeService;
 
     @GetMapping("/posts/")
     @CrossOrigin
     public ResponseEntity<List<PostDto>> list() {
         return new ResponseEntity<>(this.postService.getPosts(), HttpStatus.OK);
     }
-    
-    @PostMapping("/posts/add/")
+
+    @PostMapping("/posts/")
     @CrossOrigin
     public ResponseEntity<?> add(@RequestBody PostDto postDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -67,30 +72,78 @@ public class PostController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-///////
-    @GetMapping("/posts/{id}")
-    @CrossOrigin
-    public ResponseEntity<PostDto> post(@PathVariable(value = "id") int id) {
-        return new ResponseEntity<>(this.postService.getPostById(id), HttpStatus.OK);
-    }
 
-    @PutMapping("/posts/{id}")
+    @PutMapping("/posts/{id}/")
     @CrossOrigin
     public ResponseEntity<?> update(@RequestBody PostDto postDto, @PathVariable(value = "id") int id) {
-        return new ResponseEntity<>(this.postService.updatePost(postDto, id), HttpStatus.OK);
+        postDto.setId(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            Posts post = this.postService.updatePost(postDto, currentUser.getUserId());
+            if (post != null) {
+                return new ResponseEntity<>(post, HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>("You do not have permission to update post", HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/posts/{id}/")
     @CrossOrigin
     public ResponseEntity<?> delete(@PathVariable(value = "id") int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            return new ResponseEntity<>(this.postService.deletePost(id,currentUser), HttpStatus.NO_CONTENT);
+            if (this.postService.deletePost(id, currentUser)) {
+                return new ResponseEntity<>("Post is delete", HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>("You do not have permission to delete post", HttpStatus.UNAUTHORIZED);
+
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    
+    @PostMapping("/posts/{id}/")
+    @CrossOrigin
+    public ResponseEntity<?> isLocked(@PathVariable(value = "id") int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            if (this.postService.isLocked(id, currentUser.getUserId())) {
+                return new ResponseEntity<>("Successfull", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("You do not have permission to delete post", HttpStatus.UNAUTHORIZED);
+
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+// Like Post
+
+    @PostMapping("/posts/{id}/like/")
+    @CrossOrigin
+    public ResponseEntity<?> like(@PathVariable(value = "id") int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            if (this.likeService.like(id, currentUser)) {
+                return new ResponseEntity<>("Successfull", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Failed", HttpStatus.UNAUTHORIZED);
+
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    ////
+    @GetMapping("/posts/{id}/")
+    @CrossOrigin
+    public ResponseEntity<PostDto> post(@PathVariable(value = "id") int id) {
+        return new ResponseEntity<>(this.postService.getPostById(id), HttpStatus.OK);
+    }
+
 }

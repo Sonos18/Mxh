@@ -4,10 +4,8 @@
  */
 package com.nhs.dto;
 
-import java.util.ArrayList;
-import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,22 +13,30 @@ import lombok.NoArgsConstructor;
 
 /**
  *
- * @author admin
+ * @author DELL
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostDto {
+public class AuctionDto {
+
+    private Integer auctionId;
+
+    private Date startTime;
+
+    private Date endTime;
+
+    private BigDecimal startingPrice;
+
+    private BigDecimal buyoutPrice;
+
+    private BigDecimal winningBid;
+
+    private PostDto postDto;
+
+    private ProductsDto productsDto;
     
-    private Integer id;
-    private Date createAt;
-    private String content;
-    private String file;
-    private Boolean isLocked;
-    private UsersDto usersDto;
-    private MultipartFile imgFile;
-    private List<String> hashtags=new ArrayList<>();
-    private Long like;
-    
+    private UsersDto winnerUser;
+
 }

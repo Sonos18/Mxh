@@ -5,8 +5,13 @@
 package com.nhs.service.Impl;
 
 import com.nhs.pojo.Likes;
+import com.nhs.pojo.Posts;
+import com.nhs.pojo.Users;
 import com.nhs.repository.LikeRepository;
+import com.nhs.repository.PostRepository;
 import com.nhs.service.LikeService;
+import com.nhs.service.NotificationService;
+import java.io.NotSerializableException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -20,10 +25,19 @@ public class LikeServiceImpl implements LikeService {
 
     @Autowired
     private LikeRepository likeRepository;
+    @Autowired
+    private PostRepository poRe;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
-    public boolean like(Likes l) {
-        return this.likeRepository.like(l);
+    public boolean like(int postID,Users user) {
+        Posts post=this.poRe.getPostById(postID);
+        Likes like=new Likes();
+        like.setPostId(post);
+        like.setUserId(user);
+        return(this.notificationService.createNotification(post,"like",user)
+            && this.likeRepository.like(like));
     }
 
     @Override

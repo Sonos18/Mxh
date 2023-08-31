@@ -4,16 +4,14 @@
  */
 package com.nhs.service;
 
-import com.nhs.pojo.Likes;
-import com.nhs.pojo.Users;
+import com.nhs.dto.ProductsDto;
+import com.nhs.pojo.Products;
 
 /**
  *
  * @author DELL
  */
-public interface LikeService {
-
-    boolean like(int postID,Users user);
-
-    boolean disLike(int postID);
+public interface ProductService {
+    ProductsDto getProductByID(int id);
+    Products createProduct(ProductsDto pro);
 }

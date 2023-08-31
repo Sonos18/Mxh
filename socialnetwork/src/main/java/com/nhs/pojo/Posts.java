@@ -47,6 +47,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Posts.findByIsLocked", query = "SELECT p FROM Posts p WHERE p.isLocked = :isLocked")})
 public class Posts implements Serializable {
 
+    @OneToMany(mappedBy = "targetId")
+    private Set<Notifications> notificationsSet;
+
+    @OneToMany(mappedBy = "postId")
+    private Set<Auction> auctionSet;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -199,6 +205,24 @@ public class Posts implements Serializable {
 
     public void setLikesSet(Set<Likes> likesSet) {
         this.likesSet = likesSet;
+    }
+
+    @XmlTransient
+    public Set<Auction> getAuctionSet() {
+        return auctionSet;
+    }
+
+    public void setAuctionSet(Set<Auction> auctionSet) {
+        this.auctionSet = auctionSet;
+    }
+
+    @XmlTransient
+    public Set<Notifications> getNotificationsSet() {
+        return notificationsSet;
+    }
+
+    public void setNotificationsSet(Set<Notifications> notificationsSet) {
+        this.notificationsSet = notificationsSet;
     }
 
 }

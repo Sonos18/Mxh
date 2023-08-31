@@ -33,42 +33,73 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 public class CommentController {
+
     @Autowired
     private CommentService commentService;
-    
+
     @Autowired
     private UserService userService;
-    
+
     @GetMapping("/api/posts/{postID}/comments/")
-    public ResponseEntity<List<CommentDto>> getAllCommentsForPost(@PathVariable("postID")Integer postID){
+    public ResponseEntity<List<CommentDto>> getAllCommentsForPost(@PathVariable("postID") Integer postID) {
         return ResponseEntity.ok(this.commentService.getAllCommentsForPost(postID));
     }
-    
+
     @PostMapping("/api/posts/{postID}/comments/")
-    public ResponseEntity<?> createComment(@RequestBody CommentDto commentDto,@PathVariable("postID")Integer postID){
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<?> createComment(@RequestBody CommentDto commentDto, @PathVariable("postID") Integer postID) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            CommentDto com=this.commentService.createComment(commentDto,postID, currentUser);
-            if(com==null)
-                return new ResponseEntity<>("You do not have permission to action",HttpStatus.UNAUTHORIZED);
-            return new ResponseEntity<>(com,HttpStatus.OK);
+            CommentDto com = this.commentService.createComment(commentDto, postID, currentUser);
+            if (com == null) {
+                return new ResponseEntity<>("You do not have permission to action", HttpStatus.UNAUTHORIZED);
+            }
+            return new ResponseEntity<>(com, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-    
+
     @DeleteMapping("api/posts/{postID}/comments/{id}/")
-    public ResponseEntity<?> deleteComment(@PathVariable("postID")Integer postID,@PathVariable("id")Integer id){
-        return new ResponseEntity<>("",HttpStatus.OK);
+    public ResponseEntity<?> deleteComment(@PathVariable("postID") Integer postID, @PathVariable("id") Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            if (!this.commentService.deleteComment(id, postID, currentUser)) {
+                return new ResponseEntity<>("You do not have permission to action", HttpStatus.UNAUTHORIZED);
+            }
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-    
+
     @PutMapping("api/posts/{postID}/comments/{id}/")
-    public ResponseEntity<?> updateComment(@RequestBody CommentDto commentDto,@PathVariable("postID")Integer postID){
-        return new ResponseEntity<>("",HttpStatus.OK);
+    public ResponseEntity<?> updateComment(@RequestBody CommentDto commentDto, @PathVariable("postID") Integer postID) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            if (!this.commentService.updateComment(commentDto, postID, currentUser)) {
+                return new ResponseEntity<>("You do not have permission to action", HttpStatus.UNAUTHORIZED);
+            }
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
     @PostMapping("api/posts/{postID}/comments/{id}/")
-    public ResponseEntity<?> replyComment(@RequestBody CommentDto commentDto,@PathVariable("postID")Integer postID,@PathVariable("id")Integer id){
-        return new ResponseEntity<>("",HttpStatus.OK);
+    public ResponseEntity<?> replyComment(@RequestBody CommentDto commentDto, @PathVariable("postID") Integer postID, @PathVariable("id") Integer parentCommentID) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            if (!this.commentService.replyComment(commentDto, parentCommentID, postID, currentUser)) {
+                return new ResponseEntity<>("You do not have permission to action", HttpStatus.UNAUTHORIZED);
+            }
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

@@ -34,9 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PostRepositoryImpl implements PostRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -47,7 +44,7 @@ public class PostRepositoryImpl implements PostRepository {
         return q.getResultList();
 
     }
-
+    @Override
     public List<String> getHashtagTextsForPost(int postId) {
         Session session = this.factory.getObject().getCurrentSession();
         CriteriaBuilder builder = session.getCriteriaBuilder();
@@ -70,10 +67,9 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public boolean deletePost(int id) {
+    public boolean deletePost(Posts p) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
-            Posts p = this.getPostById(id);
             s.delete(p);
             return true;
         } catch (HibernateException ex) {
@@ -95,14 +91,14 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public boolean updatePost(Posts post) {
+    public Posts updatePost(Posts post) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
             s.update(post);
-            return true;
+            return post;
         } catch (HibernateException ex) {
             ex.printStackTrace();
-            return false;
+            return null;
         }
     }
 

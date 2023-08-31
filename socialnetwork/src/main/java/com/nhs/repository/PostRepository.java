@@ -18,11 +18,11 @@ public interface PostRepository {
 
     Posts addPost(Posts p);
 
-    boolean updatePost(Posts p);
+    Posts updatePost(Posts p);
 
     Posts getPostById(int id);
 
-    boolean deletePost(int id);
+    boolean deletePost(Posts p);
 
     List<String> getHashtagTextsForPost(int postId);
 

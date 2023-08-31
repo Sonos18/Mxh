@@ -16,7 +16,7 @@ import java.util.List;
 public interface CommentService {
     List<CommentDto> getAllCommentsForPost(Integer postID);
     CommentDto createComment(CommentDto comentDto,int postID,Users user);
-    boolean deleteComment(int commentID,int postID);
-    boolean updateComment(CommentDto commentDto,int postID);
-    CommentDto replyComment(PostDto postDto,int commentID,int postID);
+    boolean deleteComment(int commentID,int postID,Users user);
+    boolean updateComment(CommentDto commentDto,int postID,Users user);
+    boolean replyComment(CommentDto commentDto, int commentID, int postID,Users user);
 }
