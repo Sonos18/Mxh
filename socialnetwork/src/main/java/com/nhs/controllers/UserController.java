@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 
 @RestController
+@RequestMapping("/api")
 public class UserController {
 
     @Autowired
@@ -63,12 +65,13 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE}
     )
     @CrossOrigin
-    public ResponseEntity<?> register(@RequestParam Map<String, String> params, @RequestPart MultipartFile file) throws Exception {
-        return new ResponseEntity<>(this.UserService.addUsers(params, file), HttpStatus.CREATED);
+    public ResponseEntity<?> register(@RequestParam Map<String, String> params, @RequestPart MultipartFile avatar) throws Exception {
+        return new ResponseEntity<>(this.UserService.addUsers(params, avatar), HttpStatus.CREATED);
 
     }
 
     @PostMapping("/login/")
+    @CrossOrigin
     public ResponseEntity<?> login(@RequestBody @Valid loginDto loginDto, HttpServletResponse response) throws Exception {
 
         authenticate(loginDto.getUsername(), loginDto.getPassword());

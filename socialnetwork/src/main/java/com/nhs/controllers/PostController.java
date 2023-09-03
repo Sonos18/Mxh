@@ -4,6 +4,8 @@
  */
 package com.nhs.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhs.dto.PostDto;
 import com.nhs.pojo.Hashtags;
 import com.nhs.pojo.Posts;
@@ -11,12 +13,15 @@ import com.nhs.pojo.Users;
 import com.nhs.service.LikeService;
 import com.nhs.service.PostService;
 import com.nhs.service.UserService;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.PostActivate;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -51,7 +57,7 @@ public class PostController {
     private PostService postService;
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private LikeService likeService;
 
@@ -61,11 +67,19 @@ public class PostController {
         return new ResponseEntity<>(this.postService.getPosts(), HttpStatus.OK);
     }
 
-    @PostMapping("/posts/")
+    @PostMapping(path = "/posts/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<?> add(@RequestBody PostDto postDto) {
+    public ResponseEntity<?> add(@RequestParam("content") String content, @RequestParam("hashtags") String hashtags, @RequestParam("imgFile") MultipartFile imgFile) throws JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            ObjectMapper mapper = new ObjectMapper();
+            List<String> hashtagList = Arrays.asList(mapper.readValue(hashtags, String[].class));
+            PostDto postDto = PostDto.builder()
+                    .content(content)
+                    .hashtags(hashtagList)
+                    .build();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
             return new ResponseEntity<>(this.postService.addPost(postDto, currentUser), HttpStatus.CREATED);

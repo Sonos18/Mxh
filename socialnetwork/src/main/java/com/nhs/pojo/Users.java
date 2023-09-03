@@ -6,6 +6,7 @@ package com.nhs.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -43,19 +44,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt")})
 public class Users implements Serializable {
 
-    @OneToMany(mappedBy = "userId")
-    private Set<Notifications> notificationsSet;
-
-    @OneToMany(mappedBy = "winnerUserId")
-    private Set<Auction> auctionSet;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "userId")
-    private Set<Comments> commentsSet;
-    @JsonIgnore
-    @OneToMany(mappedBy = "userId")
-    private Set<Likes> likesSet;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,18 +66,30 @@ public class Users implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "password")
     private String password;
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
     @Size(max = 50)
     @Column(name = "role")
     private String role;
     @Size(max = 255)
     @Column(name = "avatar")
     private String avatar;
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
     @JsonIgnore
     @OneToMany(mappedBy = "userId")
     private Set<Posts> postsSet;
+    @OneToMany(mappedBy = "userId")
+    @JsonIgnore
+    private Set<Notifications> notificationsSet;
+    @OneToMany(mappedBy = "winnerUserId")
+    @JsonIgnore
+    private Set<Auction> auctionSet;
+    @JsonIgnore
+    @OneToMany(mappedBy = "userId")
+    private Set<Comments> commentsSet;
+    @JsonIgnore
+    @OneToMany(mappedBy = "userId")
+    private Set<Likes> likesSet;
 
     public Users() {
     }
@@ -157,7 +157,7 @@ public class Users implements Serializable {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -230,5 +230,11 @@ public class Users implements Serializable {
     public void setNotificationsSet(Set<Notifications> notificationsSet) {
         this.notificationsSet = notificationsSet;
     }
-    
+
+
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
 }

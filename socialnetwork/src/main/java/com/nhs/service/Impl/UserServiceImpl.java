@@ -10,6 +10,8 @@ import com.nhs.pojo.Users;
 import com.nhs.repository.UserRepository;
 import com.nhs.service.UserService;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -79,7 +81,7 @@ public class UserServiceImpl implements UserService {
         Users u = new Users();
         u.setUsername(params.get("username"));
         u.setPassword(this.passwordEncoder.encode(params.get("password")));
-
+        u.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         u.setEmail(params.get("email"));
         u.setRole("USER");
         try {
