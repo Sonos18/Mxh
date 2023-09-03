@@ -79,6 +79,7 @@ public class PostController {
             PostDto postDto = PostDto.builder()
                     .content(content)
                     .hashtags(hashtagList)
+                    .imgFile(imgFile)
                     .build();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
@@ -86,6 +87,7 @@ public class PostController {
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+    //sdfgsf
 
     @PutMapping("/posts/{id}/")
     @CrossOrigin
