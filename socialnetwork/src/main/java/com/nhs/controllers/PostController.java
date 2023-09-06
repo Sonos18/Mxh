@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,35 +72,48 @@ public class PostController {
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<?> add(@RequestParam("content") String content, @RequestParam("hashtags") String hashtags, @RequestParam("imgFile") MultipartFile imgFile) throws JsonProcessingException {
+    public ResponseEntity<?> add(@RequestParam Map<String, String> params, @RequestParam("imgFile") MultipartFile imgFile) throws JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             ObjectMapper mapper = new ObjectMapper();
-            List<String> hashtagList = Arrays.asList(mapper.readValue(hashtags, String[].class));
+            String hashtagsJson = params.get("hashtags");
+            List<String> hashtagList = Arrays.asList(mapper.readValue(hashtagsJson, String[].class));
             PostDto postDto = PostDto.builder()
-                    .content(content)
-                    .hashtags(hashtagList)
+                    .content(params.get("content"))
+                    .hashtags(hashtagList.size()>0?hashtagList:null)
                     .imgFile(imgFile)
                     .build();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            return new ResponseEntity<>(this.postService.addPost(postDto, currentUser), HttpStatus.CREATED);
+            PostDto post = this.postService.toPostDto(this.postService.addPost(postDto, currentUser));
+            if (post != null) {
+                return new ResponseEntity<>(post, HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>("Server is not active", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-    
 
-    @PutMapping("/posts/{id}/")
+    @PostMapping(path = "/posts/{id}/",
+             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<?> update(@RequestBody PostDto postDto, @PathVariable(value = "id") int id) {
-        postDto.setId(id);
+    public ResponseEntity<?> update(@RequestParam Map<String, String> params, @RequestPart("imgFile") MultipartFile imgFile) throws JsonProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            ObjectMapper mapper = new ObjectMapper();
+            List<String> hashtagList = Arrays.asList(mapper.readValue(params.get("hashtags"), String[].class));
+            PostDto postDto = PostDto.builder()
+                    .content(params.get("content"))
+                    .hashtags(hashtagList)
+                    .imgFile(imgFile)
+                    .build();
+            postDto.setId(Integer.parseInt(params.get("id")));
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            Posts post = this.postService.updatePost(postDto, currentUser.getUserId());
+            PostDto post = this.postService.toPostDto(this.postService.updatePost(postDto, currentUser.getUserId()));
             if (post != null) {
-                return new ResponseEntity<>(post, HttpStatus.CREATED);
+                return new ResponseEntity<>(post, HttpStatus.OK);
             }
             return new ResponseEntity<>("You do not have permission to update post", HttpStatus.UNAUTHORIZED);
         }
@@ -122,7 +136,7 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/posts/{id}/")
+    @PostMapping("/posts/{id}/lock/")
     @CrossOrigin
     public ResponseEntity<?> isLocked(@PathVariable(value = "id") int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -141,12 +155,12 @@ public class PostController {
 
     @PostMapping("/posts/{id}/like/")
     @CrossOrigin
-    public ResponseEntity<?> like(@PathVariable(value = "id") int id) {
+    public ResponseEntity<?> liked(@RequestParam Map<String, String> params) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            if (this.likeService.like(id, currentUser)) {
+            if (this.likeService.like(Integer.parseInt(params.get("id")), currentUser)) {
                 return new ResponseEntity<>("Successfull", HttpStatus.OK);
             }
             return new ResponseEntity<>("Failed", HttpStatus.UNAUTHORIZED);

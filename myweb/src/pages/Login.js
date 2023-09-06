@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import APIS, { authApi, endpoints } from "../configs/APIS";
 import cookie from "react-cookies";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { MyUserContext } from "../App";
+import Loading from "../component/Loading";
 
 
 const Login = () => {
@@ -10,8 +11,10 @@ const Login = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const login = (evt) => {
     evt.preventDefault();
+    setIsLoading(true);
     const process = async () => {
       try {
         let res = await APIS.post(endpoints["login"], {
@@ -23,12 +26,12 @@ const Login = () => {
         cookie.save("user", data);
         console.info(data);
 
+
         dispatch({
           "type": "login",
           "payload": data
         });
-        console.info(data);
-
+        setIsLoading(false);
 
       } catch (ex) {
         console.error(ex);
@@ -133,6 +136,7 @@ const Login = () => {
           />
         </div>
       </div>
+      {isLoading ? <Loading /> : null}
     </section>
 
   );

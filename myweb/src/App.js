@@ -9,6 +9,9 @@ import { createContext, useReducer, useState } from 'react';
 import MyUserReducer from './reducers/MyUserReducer';
 import cookie from 'react-cookies';
 import Register from './pages/Register';
+import Auction from './pages/Auction';
+import PostPopup from './component/PostPopup';
+import AuctionDetail from './pages/AuctionDetail';
 
 export const MyUserContext = createContext();
 
@@ -29,7 +32,9 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register/>}/>
-
+            <Route path="/posts/:id" element={<PostPopup/>}/>
+            <Route path="/auction" element={<Auction/>}/>
+            <Route path='/auction/auctiondetail' element={<AuctionDetail/>}/>
           </Routes>
         </div>
         <Footer />

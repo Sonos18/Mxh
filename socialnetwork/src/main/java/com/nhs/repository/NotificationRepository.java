@@ -5,6 +5,7 @@
 package com.nhs.repository;
 
 import com.nhs.pojo.Notifications;
+import com.nhs.pojo.Posts;
 import com.nhs.pojo.Users;
 import java.util.List;
 
@@ -16,5 +17,11 @@ public interface NotificationRepository {
 
     Notifications createNotification(Notifications not);
 
-    List<Notifications> getNotificationForUser(Users user);
+    List<Notifications> getNotificationForUser(Posts p);
+    
+    Notifications getNotificationById(int id);
+    
+    Notifications update (Notifications not);
+    
+    boolean checkNotification (Posts post,Users user, String action);
 }

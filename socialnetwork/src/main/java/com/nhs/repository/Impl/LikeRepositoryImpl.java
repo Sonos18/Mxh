@@ -7,6 +7,7 @@ package com.nhs.repository.Impl;
 import com.nhs.pojo.Likes;
 import com.nhs.pojo.Posts;
 import com.nhs.repository.LikeRepository;
+import com.nhs.repository.PostRepository;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -26,6 +27,8 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    @Autowired 
+    private PostRepository postRepository;
 
     @Override
     public Long likeofPost(int postID) {
@@ -52,7 +55,7 @@ public class LikeRepositoryImpl implements LikeRepository {
     public boolean disLike(int postID) {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("DELETE FROM Like l WHERE l.post.id = :postID");
-        q.setParameter("postID", postID);
+        q.setParameter("postID", this.postRepository.getPostById(postID));
         int deletedCount = q.executeUpdate();
         boolean deleted = deletedCount > 0; 
         return deleted;

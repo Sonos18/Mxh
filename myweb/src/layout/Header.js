@@ -1,13 +1,53 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MyUserContext } from "../App";
-import { Button } from "bootstrap";
+import Notification from "../component/Notification";
+import { useEffect } from "react";
+import { authApi, endpoints } from "../configs/APIS";
 
 const Header = ({ onSearchChange }) => {
   const [user, dispatch] = useContext(MyUserContext);
   const [activeLink, setActiveLink] = useState(0);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
+  const navigate = useNavigate();
+  const handleShowNotification = () => {
+    if (user !== null) {
+      let show=showNotification;
+      setShowNotification(!show);
+    } else
+      navigate("/login");
+
+  }
+  const [amount, setamount] = useState(0)
+  const [notification, setNotification] = useState("");
+  useEffect(() => {
+    const loadNotification = async () => {
+      try {
+        let { data } = await authApi().get(endpoints[`notification`]);
+        const formattedNotification = data.map(not => ({
+          ...not,
+          createdAt: new Date(not.createdAt).toLocaleString(),
+        }));
+        setNotification(formattedNotification);
+        let count = 0;
+        data.map((not) => {
+          if (!not.isRead) {
+            count++;
+          }
+          console.info(not.userId.avatar);
+        })
+        setamount(count);
+      }
+      catch (ex) {
+        console.error(ex);
+      }
+    };
+    loadNotification();
+  }, []);
   const handleLinkClick = (index) => {
     setActiveLink(index);
+    onSearchChange("");
   };
   const logout = () => {
     dispatch({
@@ -17,7 +57,7 @@ const Header = ({ onSearchChange }) => {
   const links = [
     { text: "Home", link: "/" },
     { text: "Logs", link: "#" },
-    { text: "Auctions", link: "#" },
+    { text: "Auctions", link: "/auction" },
     { text: "About", link: "/about" }
   ];
 
@@ -42,12 +82,6 @@ const Header = ({ onSearchChange }) => {
                   onChange={handleSearchChange}
                 />
               </div>
-              {/* <button
-              className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200"
-              type="submit"
-            >
-              Search
-            </button> */}
             </form>
           </div>
 
@@ -72,19 +106,35 @@ const Header = ({ onSearchChange }) => {
           </div>
           {/* Notification  */}
           <div className="text-end flex items-center justify-between">
-            <div className="max-w-md flex items-center">
+            <button type="button" className="relative text-4xl text-white text-md"
+              onClick={handleShowNotification}>
+              <span className="absolute w-4 h-4 text-xs bg-red-500 rounded-full right-2 leading">
+                {amount}
+              </span>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                fill="currentColor" className="bi bi-bell-fill" viewBox="0 0 16 16">
+                fill="currentColor" className="bi bi-bell-fill text-gray-700" viewBox="0 0 16 16">
                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
               </svg>
+            </button>
+            <div className="max-w-md flex items-center mr-4">
+              {showNotification && (
+                <Notification
+                  notification={notification} setNotification={setNotification} amount={amount} setamount={setamount}
+                />)}
             </div>
             <div className="text-center text-gray-500 border-gray-200 flex items-center space-x-2 mr-4 ">
               {user === null ? <>
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/login">Đăng nhập</Link>
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/register">Đăng ký</Link>
               </> : <>
-              <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" 
-              to="/l">Welcome {user.username}!</Link>
+                <Link to="#" className="relative block">
+                  <img
+                    alt="profil"
+                    src={user.avatar}
+                    className="mx-auto object-cover rounded-full h-10 w-10"
+                  />
+                </Link>
+
                 <button className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" onClick={logout}>Đăng xuất</button>
               </>}
             </div>

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import APIS, { endpoints } from "../configs/APIS";
 import { Link, useNavigate } from "react-router-dom";
+import Loading from "../component/Loading";
 
 
 const Register = () => {
@@ -10,6 +11,7 @@ const Register = () => {
         "password": "",
         "confirmPassword": ""
     });
+    const [isLoading, setIsLoading] = useState(false);
     const [err, setErr] = useState(null);
     const avatar = useRef();
     let nav=useNavigate();
@@ -21,6 +23,7 @@ const Register = () => {
     };
     const register = (evt) => {
         evt.preventDefault();
+        setIsLoading(true);
         const process= async()=>{
             let form =new FormData();
             for(let field in user)
@@ -130,6 +133,7 @@ const Register = () => {
                     </div>
                 </div>
             </div>
+            {isLoading?<Loading/>:null}
         </section>
 
     );

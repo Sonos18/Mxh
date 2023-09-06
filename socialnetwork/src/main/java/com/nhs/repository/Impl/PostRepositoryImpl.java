@@ -40,7 +40,7 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public List<Posts> getPosts() {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From Posts");
+        Query q = s.createQuery("From Posts ORDER BY createdAt DESC");
         return q.getResultList();
 
     }

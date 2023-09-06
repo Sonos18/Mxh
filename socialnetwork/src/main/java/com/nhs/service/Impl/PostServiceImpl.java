@@ -16,6 +16,8 @@ import com.nhs.repository.LikeRepository;
 import com.nhs.repository.PostRepository;
 import com.nhs.service.PostService;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,12 +47,30 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Posts updatePost(PostDto postDto, int id) {
-        System.out.println(postDto.getId());
-        Posts post = this.postRepository.getPostById(postDto.getId());
+         if (postDto.getImgFile() != null) {
+            try {
+                Map res = this.cloudinary.uploader().upload(postDto.getImgFile().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+                postDto.setFile(res.get("secure_url").toString());
+            } catch (IOException ex) {
+                Logger.getLogger(PostServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else postDto.setFile("");
+         Posts post = this.postRepository.getPostById(postDto.getId());
         if (post == null || post.getUserId().getUserId() != id) {
             return null;
         }
+        if (postDto.getHashtags().size() > 0) {
+            Set<Hashtags> hashtagses = new HashSet<>();
+            for (String hString : postDto.getHashtags()) {
+                if (hashtagRepository.getHashtagByText(hString) == null) {
+                    hashtagRepository.addHashtag(hString);
+                }
+                hashtagses.add(hashtagRepository.getHashtagByText(hString));
+            }
+            post.setHashtagsSet(hashtagses);
+        }
         post.setContent(postDto.getContent());
+        post.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         return this.postRepository.updatePost(post);
     }
 
@@ -79,6 +99,7 @@ public class PostServiceImpl implements PostService {
         p.setContent(postDto.getContent());
         p.setImage(postDto.getFile());
         p.setIsLocked(Boolean.FALSE);
+        p.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         if (postDto.getHashtags().size() > 0) {
             Set<Hashtags> hashtagses = new HashSet<>();
             for (String hString : postDto.getHashtags()) {

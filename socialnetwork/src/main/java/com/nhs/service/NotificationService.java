@@ -16,4 +16,5 @@ import java.util.List;
 public interface NotificationService {
     boolean createNotification(Posts post,String action,Users user);
     List<NotificationDto> getNotificationForUser(Users user);
+    boolean isReaded(int id);
 }

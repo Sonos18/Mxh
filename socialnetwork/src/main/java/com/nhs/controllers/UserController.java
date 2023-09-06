@@ -12,6 +12,7 @@ import com.nhs.service.NotificationService;
 import com.nhs.service.PostService;
 import com.nhs.service.UserService;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author ADMIN
  */
-
 @RestController
 @RequestMapping("/api")
 public class UserController {
@@ -53,10 +54,10 @@ public class UserController {
 
     @Autowired
     private UserService UserService;
-    
+
     @Autowired
     private PostService postService;
-    
+
     @Autowired
     private NotificationService notSer;
 
@@ -104,25 +105,46 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
     @GetMapping("/users/profile/")
     @CrossOrigin
-    public ResponseEntity<?> profile(){
+    public ResponseEntity<?> profile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = UserService.getUserByUsername(userDetails.getUsername());
-            return new ResponseEntity<>(this.postService.getPostsForUser(currentUser),HttpStatus.OK);
+            return new ResponseEntity<>(this.postService.getPostsForUser(currentUser), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
+
     @GetMapping("/users/notifications/")
     @CrossOrigin
-    public ResponseEntity<?> getNotificationForUser(){
+    public ResponseEntity<?> getNotificationForUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = UserService.getUserByUsername(userDetails.getUsername());
-            return new ResponseEntity<>(this.notSer.getNotificationForUser(currentUser),HttpStatus.OK);
+            List<NotificationDto> notDtoList = this.notSer.getNotificationForUser(currentUser);
+            if (notDtoList != null) {
+                return new ResponseEntity<>(notDtoList, HttpStatus.OK);
+            }
+            return new ResponseEntity<>("No mess", HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    @PostMapping("/users/notifications/{id}/")
+    @CrossOrigin
+    public ResponseEntity<?> isReaded(@PathVariable(value = "id") int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = UserService.getUserByUsername(userDetails.getUsername());
+            
+            if (this.notSer.isReaded(id)) {
+                return new ResponseEntity<>("true", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("false", HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
