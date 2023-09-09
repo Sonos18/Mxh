@@ -93,9 +93,10 @@ public class PostServiceImpl implements PostService {
             } catch (IOException ex) {
                 Logger.getLogger(PostServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }else postDto.setFile(null);
 
         Posts p = new Posts();
+        p.setIsAuction(postDto.getIsAuction());
         p.setContent(postDto.getContent());
         p.setImage(postDto.getFile());
         p.setIsLocked(Boolean.FALSE);
@@ -156,8 +157,8 @@ public class PostServiceImpl implements PostService {
                 .usersDto(userDto)
                 .createAt(p.getCreatedAt())
                 .hashtags(this.postRepository.getHashtagTextsForPost(p.getPostId()))
-                .like(this.likeRepository.likeofPost(p.getPostId()))
                 .build();
+        postDto.setUsernameLike(this.likeRepository.likeofPost(p.getPostId()));
         return postDto;
     }
 

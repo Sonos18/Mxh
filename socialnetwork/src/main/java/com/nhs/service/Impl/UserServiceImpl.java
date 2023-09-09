@@ -6,6 +6,7 @@ package com.nhs.service.Impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.nhs.dto.UsersDto;
 import com.nhs.pojo.Users;
 import com.nhs.repository.UserRepository;
 import com.nhs.service.UserService;
@@ -35,10 +36,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private Cloudinary cloudinary;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -92,6 +93,16 @@ public class UserServiceImpl implements UserService {
             Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return userRepository.addUser(u);
+    }
+
+    @Override
+    public UsersDto toUsersDto(Users user) {
+        UsersDto usersDto = UsersDto.builder()
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .build();
+        return usersDto;
     }
 
 }

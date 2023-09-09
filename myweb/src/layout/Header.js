@@ -9,38 +9,46 @@ const Header = ({ onSearchChange }) => {
   const [user, dispatch] = useContext(MyUserContext);
   const [activeLink, setActiveLink] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
+  const [showDashboard,setShowDashboard]=useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const navigate = useNavigate();
   const handleShowNotification = () => {
     if (user !== null) {
-      let show=showNotification;
+      let show = showNotification;
       setShowNotification(!show);
     } else
       navigate("/login");
 
   }
+  const handleShowDashboard=()=>{
+    setShowDashboard(!showDashboard);
+  }
   const [amount, setamount] = useState(0)
   const [notification, setNotification] = useState("");
   useEffect(() => {
     const loadNotification = async () => {
-      try {
-        let { data } = await authApi().get(endpoints[`notification`]);
-        const formattedNotification = data.map(not => ({
-          ...not,
-          createdAt: new Date(not.createdAt).toLocaleString(),
-        }));
-        setNotification(formattedNotification);
-        let count = 0;
-        data.map((not) => {
-          if (!not.isRead) {
-            count++;
-          }
-          console.info(not.userId.avatar);
-        })
-        setamount(count);
-      }
-      catch (ex) {
-        console.error(ex);
+      if (user != null) {
+        try {
+          let { data } = await authApi().get(endpoints[`notification`]);
+          const formattedNotification = data.map(not => ({
+            ...not,
+            createdAt: new Date(not.createdAt).toLocaleString(),
+          }));
+          setNotification(formattedNotification);
+          let count = 0;
+          data.map((not) => {
+            if (!not.isRead) {
+              count++;
+            }
+          })
+          setamount(count);
+        }
+        catch (ex) {
+          console.error(ex);
+        }
+
+
+
       }
     };
     loadNotification();
@@ -67,7 +75,7 @@ const Header = ({ onSearchChange }) => {
   };
   return (
     <>
-      <div className="border-gray-200 border-b py-3 bg-gray-200">
+      <div className="border-gray-200 border-b py-3 bg-cyan-100">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="text-start flex items-center space-x-2 ml-4">
@@ -86,7 +94,7 @@ const Header = ({ onSearchChange }) => {
           </div>
 
           {/* Navigation */}
-          <div className="text-sm font-medium text-center text-gray-500 border-gray-200">
+          <div className="text-sm font-medium text-center text-gray-900  border-gray-200">
             <ul className="flex flex-wrap -mb-px">
               {links.map((link, index) => (
                 <li className="mr-2" key={index}>
@@ -127,13 +135,13 @@ const Header = ({ onSearchChange }) => {
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/login">Đăng nhập</Link>
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/register">Đăng ký</Link>
               </> : <>
-                <Link to="#" className="relative block">
+                <div onClick={showDashboard} className="relative block">
                   <img
                     alt="profil"
                     src={user.avatar}
                     className="mx-auto object-cover rounded-full h-10 w-10"
                   />
-                </Link>
+                </div>
 
                 <button className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" onClick={logout}>Đăng xuất</button>
               </>}

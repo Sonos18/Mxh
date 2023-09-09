@@ -14,4 +14,5 @@ import com.nhs.pojo.Products;
 public interface ProductService {
     ProductsDto getProductByID(int id);
     Products createProduct(ProductsDto pro);
+    ProductsDto toProductDto(Products pro);
 }

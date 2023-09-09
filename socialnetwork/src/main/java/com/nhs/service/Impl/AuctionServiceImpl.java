@@ -4,6 +4,8 @@
  */
 package com.nhs.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhs.dto.AuctionDto;
 import com.nhs.dto.PostDto;
 import com.nhs.dto.ProductsDto;
@@ -16,10 +18,16 @@ import com.nhs.repository.AuctionRepository;
 import com.nhs.service.AuctionService;
 import com.nhs.service.PostService;
 import com.nhs.service.ProductService;
+import com.nhs.service.UserService;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -34,50 +42,63 @@ public class AuctionServiceImpl implements AuctionService {
     private PostService postService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<AuctionDto> getAllAuctions() {
         List<Auction> auctions = this.auctionRepository.getAllAuctions();
         List<AuctionDto> auctionDtos = new ArrayList<>();
+        UsersDto userDto = new UsersDto();
         auctions.forEach(auction -> {
-            UsersDto userDto = UsersDto.builder()
-                    .userId(auction.getWinnerUserId().getUserId())
-                    .email(auction.getWinnerUserId().getEmail())
-                    .username(auction.getWinnerUserId().getUsername())
-                    .build();
+            AuctionDto auctionDto = this.toAuctionDto(auction);
+            if (auction.getWinnerUserId() != null) {
+                auctionDto.setWinnerUser(this.userService.toUsersDto(auction.getWinnerUserId()));
+            }
             PostDto postDto = this.postService.getPostById(auction.getPostId().getPostId());
             ProductsDto productDto = this.productService.getProductByID(auction.getProductId().getId());
-            AuctionDto auctionDto = AuctionDto.builder()
-                    .auctionId(auction.getAuctionId())
-                    .startTime(auction.getStartTime())
-                    .endTime(auction.getEndTime())
-                    .startingPrice(auction.getStartingPrice())
-                    .buyoutPrice(auction.getBuyoutPrice())
-                    .winningBid(auction.getWinningBid())
-                    .postDto(postDto)
-                    .productsDto(productDto)
-                    .winnerUser(userDto)
-                    .build();
+            auctionDto.setProductsDto(productDto);
+            auctionDto.setPostDto(postDto);
             auctionDtos.add(auctionDto);
         });
         return auctionDtos;
     }
 
+    /**
+     *
+     * @param params
+     * @param user
+     * @param imgFile
+     * @return
+     * @throws JsonProcessingException
+     */
     @Override
-    public Auction createAuction(AuctionDto au, Users user) {
-        System.out.println(au.getPostDto().getContent());
+    public Auction createAuction(Map<String, String> params, Users user, MultipartFile imgFile) throws JsonProcessingException {
         Auction auction = new Auction();
-        PostDto postDto=au.getPostDto();
-        Posts post=this.postService.addPost(postDto, user);
-        Products pro=this.productService.createProduct(au.getProductsDto());
-        auction.setStartTime(au.getStartTime());
-        auction.setEndTime(au.getEndTime());
-        auction.setBuyoutPrice(au.getBuyoutPrice());
-        auction.setStartingPrice(au.getStartingPrice());
-        auction.setWinningBid(au.getWinningBid());
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> hashtagList = new ArrayList<>();
+        hashtagList = Arrays.asList(mapper.readValue(params.get("hashtags"), String[].class));
+        PostDto postDto = PostDto.builder()
+                .content(params.get("content"))
+                .hashtags(hashtagList)
+                .isAuction(Boolean.TRUE)
+                .build();
+        Posts post = this.postService.addPost(postDto, user);
+        ProductsDto productsDto = ProductsDto.builder()
+                .name(params.get("name"))
+                .description(params.get("description"))
+                .imgFile(imgFile)
+                .build();
+        Products pro = this.productService.createProduct(productsDto);
+        String time = params.get("startTime");
+        auction.setStartTime(new Date(Long.parseLong(time)));
+        String time2 = params.get("endTime");
+        auction.setEndTime(new Date(Long.parseLong(time2)));
+        auction.setBuyoutPrice(new BigDecimal(params.get("startingPrice")));
+        auction.setStartingPrice(new BigDecimal(params.get("buyoutPrice")));
         auction.setPostId(post);
         auction.setProductId(pro);
-        return this.auctionRepository.createAuction(auction);                             
+        return this.auctionRepository.createAuction(auction);
     }
 
     @Override
@@ -87,22 +108,51 @@ public class AuctionServiceImpl implements AuctionService {
 
     @Override
     public boolean updateAuction(AuctionDto au, int userID) {
-        Auction auction=this.auctionRepository.getauAuctionByID(au.getAuctionId());
-        if(auction==null)
+        Auction auction = this.auctionRepository.getauAuctionByID(au.getAuctionId());
+        if (auction == null) {
             return false;
+        }
         au.getPostDto().setId(auction.getPostId().getPostId());
-        Posts post= this.postService.updatePost(au.getPostDto(), userID);
-        if(post==null)
+        Posts post = this.postService.updatePost(au.getPostDto(), userID);
+        if (post == null) {
             return false;
+        }
         auction.setPostId(post);
         auction.setBuyoutPrice(au.getBuyoutPrice());
         auction.setStartTime(au.getStartTime());
         auction.setEndTime(au.getEndTime());
         auction.setStartingPrice(au.getStartingPrice());
         auction.setWinningBid(au.getWinningBid());
-        return (this.auctionRepository.updateAuction(auction)==null?false:true);
+        return (this.auctionRepository.updateAuction(auction) == null ? false : true);
     }
 
+    @Override
+    public AuctionDto toAuctionDto(Auction auction) {
+        if (auction == null) {
+            return null;
+        }
+        AuctionDto auctionDto = AuctionDto.builder()
+                .auctionId(auction.getAuctionId())
+                .startTime(auction.getStartTime())
+                .endTime(auction.getEndTime())
+                .startingPrice(auction.getStartingPrice())
+                .buyoutPrice(auction.getBuyoutPrice())
+                .winningBid(auction.getWinningBid())
+                .build();
+        auctionDto.setPostDto(this.postService.toPostDto(auction.getPostId()));
+        auctionDto.setProductsDto(this.productService.toProductDto(auction.getProductId()));
+        if (auction.getWinnerUserId() != null) {
+            auctionDto.setWinnerUser(this.userService.toUsersDto(auction.getWinnerUserId()));
+            auctionDto.setWinningBid(auction.getWinningBid());
+        }
+        return auctionDto;
+    }
 
-    
+    @Override
+    public AuctionDto winningBid(Map<String, String> params) {
+        Auction au=this.auctionRepository.getauAuctionByID(Integer.parseInt(params.get("id")));
+        au.setWinningBid(new BigDecimal(params.get("bid")));
+        return this.toAuctionDto(this.auctionRepository.updateAuction(au));
+    }
+
 }

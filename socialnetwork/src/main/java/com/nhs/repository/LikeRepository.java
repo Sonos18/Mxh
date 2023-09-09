@@ -5,13 +5,18 @@
 package com.nhs.repository;
 
 import com.nhs.pojo.Likes;
+import com.nhs.pojo.Users;
+import java.util.List;
 
 /**
  *
  * @author DELL
  */
 public interface LikeRepository {
-    Long likeofPost(int postID);
+
+    List<String> likeofPost(int postID);
+
     boolean like(Likes l);
-    boolean disLike(int postID);
+
+    boolean disLike(int postID, Users user);
 }

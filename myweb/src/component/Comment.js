@@ -1,6 +1,6 @@
-const Comment=()=>{
+const Comment=({handleShowComment})=>{
     return(
-        <div className="flex items-center w-1/2">
+        <div onClick={handleShowComment} className="inline-block items-center w-1/2">
           <button className="flex items-center space-x-2 focus:outline-none">
             <svg
               viewBox="0 0 512 512"

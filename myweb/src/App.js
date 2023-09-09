@@ -12,6 +12,7 @@ import Register from './pages/Register';
 import Auction from './pages/Auction';
 import PostPopup from './component/PostPopup';
 import AuctionDetail from './pages/AuctionDetail';
+import InputPrice from './component/InputPricePopup';
 
 export const MyUserContext = createContext();
 
@@ -34,7 +35,8 @@ function App() {
             <Route path="/register" element={<Register/>}/>
             <Route path="/posts/:id" element={<PostPopup/>}/>
             <Route path="/auction" element={<Auction/>}/>
-            <Route path='/auction/auctiondetail' element={<AuctionDetail/>}/>
+            <Route path="/auction/auctiondetail" element={<AuctionDetail/>}/>
+            <Route path="/auctions/:id/winningBid"element={<InputPrice/>}/>
           </Routes>
         </div>
         <Footer />

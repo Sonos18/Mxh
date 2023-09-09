@@ -15,5 +15,5 @@ public interface LikeService {
 
     boolean like(int postID,Users user);
 
-    boolean disLike(int postID);
+    boolean disLike(int postID, Users user);
 }

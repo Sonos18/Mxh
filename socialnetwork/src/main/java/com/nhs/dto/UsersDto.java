@@ -23,5 +23,4 @@ public class UsersDto {
     private String email;
     private String password;
     private String avatar;
-  
 }

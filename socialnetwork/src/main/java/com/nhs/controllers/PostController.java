@@ -82,6 +82,7 @@ public class PostController {
                     .content(params.get("content"))
                     .hashtags(hashtagList.size()>0?hashtagList:null)
                     .imgFile(imgFile)
+                    .isAuction(Boolean.FALSE)
                     .build();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
@@ -164,6 +165,22 @@ public class PostController {
                 return new ResponseEntity<>("Successfull", HttpStatus.OK);
             }
             return new ResponseEntity<>("Failed", HttpStatus.UNAUTHORIZED);
+
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    
+    @PostMapping("/posts/{id}/dislike/")
+    @CrossOrigin
+    public ResponseEntity<?> disLiked(@PathVariable(value = "id") int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            if (this.likeService.disLike(id, currentUser)) {
+                return new ResponseEntity<>("Successfull", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Failed", HttpStatus.OK);
 
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

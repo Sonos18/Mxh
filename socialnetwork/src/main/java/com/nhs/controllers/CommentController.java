@@ -10,6 +10,7 @@ import com.nhs.pojo.Users;
 import com.nhs.service.CommentService;
 import com.nhs.service.UserService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -46,12 +48,16 @@ public class CommentController {
     }
 
     @PostMapping("/api/posts/{postID}/comments/")
-    public ResponseEntity<?> createComment(@RequestBody CommentDto commentDto, @PathVariable("postID") Integer postID) {
+    public ResponseEntity<?> createComment(@RequestParam Map<String, String> params ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            CommentDto commentDto=CommentDto.builder()
+                    .content(params.get("content"))
+                    .postId(Integer.parseInt(params.get("postId")))
+                    .build();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            CommentDto com = this.commentService.createComment(commentDto, postID, currentUser);
+            CommentDto com = this.commentService.createComment(commentDto, commentDto.getPostId(), currentUser);
             if (com == null) {
                 return new ResponseEntity<>("You do not have permission to action", HttpStatus.UNAUTHORIZED);
             }

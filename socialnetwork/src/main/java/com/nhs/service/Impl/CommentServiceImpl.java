@@ -13,6 +13,8 @@ import com.nhs.repository.CommentRepository;
 import com.nhs.repository.PostRepository;
 import com.nhs.service.CommentService;
 import com.nhs.service.UserService;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
@@ -49,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
                     .commentId(c.getCommentId())
                     .createAt(c.getCreateAt())
                     .content(c.getContent())
-                    .user(c.getUserId().getUsername())
+                    .user(this.userService.toUsersDto(c.getUserId()))
                     .build();
             commentDtos.add(commentDto);
         });
@@ -63,7 +65,12 @@ public class CommentServiceImpl implements CommentService {
             return null;
         }
         Comments comment = new Comments(commentDto.getContent(), user, post);
-        if (this.commentRepository.createComment(comment)) {
+        comment.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
+        Comments c=this.commentRepository.createComment(comment);
+        if (c!=null) {
+            commentDto.setCommentId(c.getCommentId());
+            commentDto.setUser(this.userService.toUsersDto(comment.getUserId()));
+            commentDto.setCreateAt(comment.getCreateAt());
             return commentDto;
         }
         return null;
@@ -101,7 +108,8 @@ public class CommentServiceImpl implements CommentService {
         comment.setPostId(post);
         comment.setParentCommentId(com);
         comment.setUserId(user);
-        return this.commentRepository.createComment(comment);
+        return false;
+//        this.commentRepository.createComment(comment);
         
     }
 

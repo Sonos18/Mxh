@@ -41,8 +41,8 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public boolean disLike(int postID) {
-        return this.likeRepository.disLike(postID);
+    public boolean disLike(int postID, Users user) {
+        return this.likeRepository.disLike(postID,user);
     }
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface CommentRepository {
     List<Comments> getCommentsForPost(int postID);
-    boolean createComment(Comments comment);
+    Comments createComment(Comments comment);
     boolean deleteComment(int comemntID,Posts post, Users user);
     boolean updateComment(Comments comment);
     Comments getCommentByID(int id);

@@ -40,14 +40,10 @@ const Notification = ({ notification, setNotification, setamount, amount }) => {
                                     {p.createdAt}</div>
                                     <div className="h-6 rounded-md w-46 text-left">
                                     {p.userId.username} Da {p.actionType} bai viet cua ban</div>
-                                   
                                 </div>
                             </div>
                         </div>
-                        // <div className="cursor-pointer block p-1" key={p.notificationId} onClick={() => handleRead(p.notificationId)}>
-                        //     <p className={p.isRead ? "opacity-70" : ""}
-                        //     >{p.userId.username} da {p.actionType} bai viet cua ban</p>
-                        // </div>
+
 
                     ))}
                 </>

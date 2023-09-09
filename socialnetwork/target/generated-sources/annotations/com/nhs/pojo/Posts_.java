@@ -12,7 +12,7 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2023-09-05T15:10:09", comments="EclipseLink-2.7.7.v20200504-rNA")
+@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2023-09-09T20:59:32", comments="EclipseLink-2.7.7.v20200504-rNA")
 @StaticMetamodel(Posts.class)
 public class Posts_ { 
 
@@ -20,13 +20,14 @@ public class Posts_ {
     public static volatile SetAttribute<Posts, Auction> auctionSet;
     public static volatile SingularAttribute<Posts, String> image;
     public static volatile SetAttribute<Posts, Comments> commentsSet;
-    public static volatile SingularAttribute<Posts, Date> createdAt;
-    public static volatile SetAttribute<Posts, Hashtags> hashtagsSet;
-    public static volatile SingularAttribute<Posts, Boolean> isLocked;
+    public static volatile SingularAttribute<Posts, Boolean> isAuction;
     public static volatile SingularAttribute<Posts, Integer> postId;
     public static volatile SingularAttribute<Posts, Users> userId;
     public static volatile SingularAttribute<Posts, String> content;
     public static volatile SetAttribute<Posts, Likes> likesSet;
+    public static volatile SingularAttribute<Posts, Date> createdAt;
+    public static volatile SetAttribute<Posts, Hashtags> hashtagsSet;
+    public static volatile SingularAttribute<Posts, Boolean> isLocked;
     public static volatile SingularAttribute<Posts, Date> updatedAt;
 
 }

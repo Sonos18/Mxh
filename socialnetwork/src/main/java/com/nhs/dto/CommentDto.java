@@ -28,5 +28,5 @@ public class CommentDto {
 
     private Integer postId;
     
-    private String user;
+    private UsersDto user;
 }

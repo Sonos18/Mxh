@@ -29,7 +29,7 @@ public class AuctionRepositoryImpl implements AuctionRepository {
     @Override
     public List<Auction> getAllAuctions() {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From Auction");
+        Query q = s.createQuery("SELECT a From Auction a JOIN a.postId p ORDER BY p.createdAt DESC");
         return q.getResultList();
     }
 

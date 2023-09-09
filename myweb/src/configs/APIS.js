@@ -13,7 +13,10 @@ export const endpoints = {
     "notification":`${SERVER_CONTEXT}api/users/notifications/`,
     "read":(id)=>`${SERVER_CONTEXT}api/users/notifications/${id}/`,
     "like":(id)=>`${SERVER_CONTEXT}api/posts/${id}/like/`,
-
+    "auction":`${SERVER_CONTEXT}api/auction/`,
+    "dislike":(id)=>`${SERVER_CONTEXT}api/posts/${id}/dislike`,
+    "comment":(postId)=>`${SERVER_CONTEXT}api/posts/${postId}/comments/`,
+    "winningBid":(auctionId)=>`${SERVER_CONTEXT}api/auction/${auctionId}/winningBid/`,
 }
 
 export const authApi = () => {

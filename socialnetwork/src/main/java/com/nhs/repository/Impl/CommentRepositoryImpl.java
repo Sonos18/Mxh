@@ -38,14 +38,14 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public boolean createComment(Comments comment) {
+    public Comments createComment(Comments comment) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
             s.save(comment);
-            return true;
+            return comment;
         } catch (HibernateException ex) {
             ex.printStackTrace();
-            return false;
+            return null;
         }
     }
 

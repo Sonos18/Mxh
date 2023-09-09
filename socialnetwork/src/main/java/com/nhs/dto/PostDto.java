@@ -22,15 +22,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PostDto {
-    
+
     private Integer id;
     private Date createAt;
     private String content;
     private String file;
     private Boolean isLocked;
+    private Boolean isAuction;
     private UsersDto usersDto;
     private MultipartFile imgFile;
-    private List<String> hashtags=new ArrayList<>();
-    private Long like;
-    
+    private List<String> hashtags = new ArrayList<>();
+    private List<String> usernameLike;
+
 }
