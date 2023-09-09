@@ -4,6 +4,7 @@ import { MyUserContext } from "../App";
 import Notification from "../component/Notification";
 import { useEffect } from "react";
 import { authApi, endpoints } from "../configs/APIS";
+import Sidebar from "../component/Sidebar";
 
 const Header = ({ onSearchChange }) => {
   const [user, dispatch] = useContext(MyUserContext);
@@ -135,14 +136,16 @@ const Header = ({ onSearchChange }) => {
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/login">Đăng nhập</Link>
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/register">Đăng ký</Link>
               </> : <>
-                <div onClick={showDashboard} className="relative block">
+                <div onClick={handleShowDashboard} className="relative block">
                   <img
                     alt="profil"
                     src={user.avatar}
                     className="mx-auto object-cover rounded-full h-10 w-10"
                   />
                 </div>
-
+                {showDashboard&&
+                <Sidebar/>
+                }
                 <button className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" onClick={logout}>Đăng xuất</button>
               </>}
             </div>
