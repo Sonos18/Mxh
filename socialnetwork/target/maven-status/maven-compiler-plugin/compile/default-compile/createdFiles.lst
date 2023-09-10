@@ -1,4 +1,5 @@
 com\nhs\repository\CommentRepository.class
+com\nhs\controllers\AdminController.class
 com\nhs\repository\PostRepository.class
 META-INF\spring.components
 com\nhs\repository\Impl\ProductRepositoryImpl.class
@@ -24,6 +25,7 @@ com\nhs\dto\loginDto$loginDtoBuilder.class
 com\nhs\dto\PostDto.class
 com\nhs\pojo\Notifications_.class
 com\nhs\repository\Impl\UserRepositoryImpl.class
+com\nhs\service\AdminService.class
 com\nhs\service\Impl\CommentServiceImpl.class
 com\nhs\pojo\Hashtags.class
 com\nhs\service\Impl\AuctionServiceImpl.class
@@ -33,6 +35,7 @@ com\nhs\dto\UsersDto$UsersDtoBuilder.class
 com\nhs\repository\HashtagRepository.class
 com\nhs\service\CommentService.class
 com\nhs\dto\loginDto.class
+com\nhs\repository\AdminRepository.class
 com\nhs\pojo\Products.class
 com\nhs\repository\Impl\AuctionRepositoryImpl.class
 com\nhs\repository\ProductRepository.class
@@ -52,6 +55,7 @@ com\nhs\dto\CommentDto.class
 com\nhs\service\ProductService.class
 com\nhs\repository\Impl\CommentRepositoryImpl.class
 com\nhs\pojo\Hashtags_.class
+com\nhs\configs\TilesConfig.class
 com\nhs\service\Impl\LikeServiceImpl.class
 com\nhs\pojo\Posts.class
 com\nhs\pojo\Products_.class
@@ -59,6 +63,7 @@ com\nhs\pojo\Users_.class
 com\nhs\security\JwtAuthenticationTokenFilter.class
 com\nhs\pojo\Notifications.class
 com\nhs\security\JwtService.class
+com\nhs\service\Impl\AdminServiceImpl.class
 com\nhs\pojo\Auction_.class
 com\nhs\security\CustomAccessDeniedHandler.class
 com\nhs\service\NotificationService.class
@@ -72,6 +77,7 @@ com\nhs\service\AuctionService.class
 com\nhs\configs\JwtSecurityConfig.class
 com\nhs\repository\NotificationRepository.class
 com\nhs\controllers\PostController.class
+com\nhs\repository\Impl\AdminRepositoryImpl.class
 com\nhs\pojo\Comments.class
 com\nhs\configs\DispatcherServletInit.class
 com\nhs\dto\ProductsDto.class

@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
     "com.nhs.*"
-          })
+})
 @Order(1)
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -85,13 +85,15 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
 //            .access("hasRole('ROLE_ADMIN')");
 //        http.csrf().disable();
         // Disable crsf cho đường dẫn /rest/**
-        http.csrf().ignoringAntMatchers("/api/**");
+        http.csrf().ignoringAntMatchers("/**");
         http.authorizeRequests().antMatchers("/login/").permitAll();
         http.authorizeRequests().antMatchers("/**").permitAll();
         http.authorizeRequests().antMatchers("/api/categories/").permitAll();
         http.authorizeRequests().antMatchers("/api/users/").permitAll();
         http.antMatcher("/api/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+                .antMatchers(HttpMethod.POST, "/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
                 .antMatchers(HttpMethod.GET, "/api/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
                 .antMatchers(HttpMethod.POST, "/api/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
                 .antMatchers(HttpMethod.DELETE, "/api/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')").and()

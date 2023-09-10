@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+    "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+    <definition name="baseLayout"
+                template="/WEB-INF/layout/base.jsp">
+        <put-attribute name="title" value="" />
+        <put-attribute name="header"
+                       value="/WEB-INF/layout/header.jsp" />
+        <put-attribute name="content" value="" />
+        <put-attribute name="footer"
+                       value="/WEB-INF/layout/footer.jsp" />
+    </definition>
+    
+    
+    
+    
+    
+    <definition name="admin" extends="baseLayout">
+        <put-attribute name="titleAdmin" value="Trang quản lý" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/admin.jsp" />
+        <put-attribute name="footer" value="" />
+
+    </definition>
+    
+    <definition name="login" extends="baseLayout">
+        <put-attribute name="titleAdmin" value="Dang Nhap" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/login.jsp" />
+        <put-attribute name="footer" value="" />
+
+    </definition>
+    
+    <definition name="index" extends="baseLayout">
+        <put-attribute name="titleAdmin" value="Trang Chu" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/index.jsp" />
+        <put-attribute name="footer" value="" />
+
+    </definition>
+
+
+    <definition name="StatLike" extends="baseLayout">
+        <put-attribute name="titleAdmin" value="Trang Chu" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/StatLike.jsp" />
+        <put-attribute name="footer" value="" />
+
+    </definition>
+    
+    
+    <definition name="StatPost" extends="baseLayout">
+        <put-attribute name="titleAdmin" value="Trang Chu" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/StatPost.jsp" />
+        <put-attribute name="footer" value="" />
+
+    </definition>
+
+
+
+   
+
+</tiles-definitions>
