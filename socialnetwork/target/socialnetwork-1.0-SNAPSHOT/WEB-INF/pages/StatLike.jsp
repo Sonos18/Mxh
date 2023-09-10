@@ -5,7 +5,7 @@
 
 <div class="main-table  container">
     <div class="search">
-        <form action="<c:url value="/stats/"/>" class="form-search">
+        <form action="<c:url value="/statsLike/"/>" class="form-search">
             <input name="month" type="month"  />
             <button type="submit"><i class="fas fa-search"></i></button>
         </form>
@@ -23,21 +23,21 @@
     let data = [];
     let labels = [];
 
-    <c:forEach items="${stat}" var="y">
+    <c:forEach items="${like}" var="y">
     labels.push("Tháng" + '${y[0]}');
     data.push('${y[1]}');
     </c:forEach>
 
     for (let i = 1; i <= 12; i++) {
         if (labels[i]!==i && data[i]===null) {
-            labels.push("Tháng " + i);
+            labels.push("Tháng" + i);
             data.push(0);
         }
     }
 // Thêm giá trị 0 cho các tháng còn thiếu
     for (let i = 1; i <= 12; i++) {
         if (!labels.includes("Tháng" + i)) {
-            labels.push("Tháng " + i);
+            labels.push("Tháng" + i);
             data.push(0);
         }
     }
@@ -92,8 +92,4 @@
 
 </script>
 
-<!--<style>
-    #myChart{
-        width: 800px !important;
-    }
-</style>-->
+]

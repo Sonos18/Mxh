@@ -22,11 +22,25 @@
 
     let data = [];
     let labels = [];
+
     <c:forEach items="${stat}" var="y">
+    labels.push("Tháng" + '${y[0]}');
     data.push('${y[1]}');
-    labels.push('${y[0]}');
     </c:forEach>
-    // Get chart data from the model
+
+    for (let i = 1; i <= 12; i++) {
+        if (labels[i]!==i && data[i]===null) {
+            labels.push("Tháng " + i);
+            data.push(0);
+        }
+    }
+// Thêm giá trị 0 cho các tháng còn thiếu
+    for (let i = 1; i <= 12; i++) {
+        if (!labels.includes("Tháng" + i)) {
+            labels.push("Tháng " + i);
+            data.push(0);
+        }
+    }
     var chartData = data;
 
     // Create a chart using Chart.js
@@ -66,7 +80,6 @@
         if (parts.length === 2) {
             const month = parts[1];
             const  year = parts[0];
-            console.log(parts);
 
             // Tạo một tham số truy vấn mới với giá trị tháng
             const newQueryString = "?month=" + month + "&year=" + year;

@@ -22,24 +22,24 @@
                 <sec:authorize access="hasAnyAuthority('ADMIN')">
                     <div class="dropdown">                   
                         <li class="nav-item">
-                            <a class="nav-link text-primary" href="<c:url value="/store-manager/" />">
-                                <i class="fa-solid fa-shop" aria-hidden="true"></i> Cửa Hàng</a>
+                            <a class="nav-link text-primary" href="<c:url value="/stats" />">
+                                <i class="fa-solid fa-signal"></i> Comment</a>
                         </li>
                     </div>
                 </sec:authorize>
-                <sec:authorize access="hasAnyAuthority('ADMIN')">
+                     <sec:authorize access="hasAnyAuthority('ADMIN')">
                     <div class="dropdown">                   
                         <li class="nav-item">
-                            <a class="nav-link text-primary" href="<c:url value="/requestment" />">
-                                <i class="fa-regular fa-user"></i> Yêu Cầu</a>
+                            <a class="nav-link text-primary" href="<c:url value="/statsLike" />">
+                                <i class="fa-solid fa-signal"></i> Like</a>
                         </li>
                     </div>
                 </sec:authorize>
-                <sec:authorize access="hasAnyAuthority('EMPLOYE')">
+                    <sec:authorize access="hasAnyAuthority('ADMIN')">
                     <div class="dropdown">                   
                         <li class="nav-item">
-                            <a class="nav-link text-primary" href="<c:url value="/stat/" />">
-                                <i class="fa-solid fa-shop" aria-hidden="true"></i> Stats</a>
+                            <a class="nav-link text-primary" href="<c:url value="/statsPost" />">
+                                <i class="fa-solid fa-signal"></i> Post</a>
                         </li>
                     </div>
                 </sec:authorize>

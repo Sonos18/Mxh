@@ -14,5 +14,7 @@ import java.util.Map;
 public interface AdminService {
 
     List<Object[]> stat(Map<String, String> params);
+    List<Object[]> statLike(Map<String, String> params);
+    List<Object[]> statPost(Map<String, String> params);
 
 }

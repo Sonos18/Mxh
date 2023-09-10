@@ -12,5 +12,11 @@ import java.util.Map;
  * @author ADMIN
  */
 public interface AdminRepository {
-    List<Object[]> stat(Map<String,String> params);
+
+    List<Object[]> stat(Map<String, String> params);
+
+    List<Object[]> statLike(Map<String, String> params);
+
+    List<Object[]> statPost(Map<String, String> params);
+
 }

@@ -32,9 +32,23 @@ public class AdminController {
 
     @GetMapping("/stats")
     public String stats(Model model, @RequestParam Map<String, String> params) {
-        System.out.println(AdminService.stat(params));
+
         model.addAttribute("stat", AdminService.stat(params));
         return "admin";
+    }
+
+    @GetMapping("/statsLike")
+    public String statsLike(Model model, @RequestParam Map<String, String> params) {
+
+        model.addAttribute("like", AdminService.statLike(params));
+        return "StatLike";
+    }
+
+    @GetMapping("/statsPost")
+    public String statsPost(Model model, @RequestParam Map<String, String> params) {
+
+        model.addAttribute("post", AdminService.statPost(params));
+        return "StatPost";
     }
 
 }

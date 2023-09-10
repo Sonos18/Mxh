@@ -5,6 +5,8 @@
 package com.nhs.repository.Impl;
 
 import com.nhs.pojo.Comments;
+import com.nhs.pojo.Likes;
+import com.nhs.pojo.Posts;
 import com.nhs.repository.AdminRepository;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +69,76 @@ public class AdminRepositoryImpl implements AdminRepository {
         }
         return null;
 
+    }
+
+    @Override
+    public List<Object[]> statLike(Map<String, String> params) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = s.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cr = builder.createQuery(Object[].class);
+
+        Root rL = cr.from(Likes.class);
+
+        String month = params.get("month");
+        String year = params.get("year");
+        if (params != null && year != null) {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (month != null && !month.isEmpty()) {
+                predicates.add(builder.equal(builder.function("year", Integer.class, rL.get("createAt")),
+                        Integer.parseInt(year)));
+                Predicate Condition = builder.lessThan(builder.function("MONTH",
+                        Integer.class, rL.get("createAt")), Integer.parseInt(month));
+
+                predicates.add(Condition);
+            }
+
+            cr.where(predicates.toArray(Predicate[]::new));
+            cr.multiselect(builder.function("month", Integer.class, rL.get("createAt")),
+                    builder.count(rL.get("createAt"))
+            );
+            cr.groupBy(builder.function("month", Integer.class, rL.get("createAt")));
+            cr.orderBy(builder.asc(rL.get("createAt")));
+            org.hibernate.query.Query query = s.createQuery(cr);
+            return query.getResultList();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Object[]> statPost(Map<String, String> params) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = s.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cr = builder.createQuery(Object[].class);
+
+        Root rL = cr.from(Posts.class);
+
+        String month = params.get("month");
+        String year = params.get("year");
+        if (params != null && year != null) {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (month != null && !month.isEmpty()) {
+                predicates.add(builder.equal(builder.function("year", Integer.class, rL.get("createdAt")),
+                        Integer.parseInt(year)));
+                Predicate Condition = builder.lessThan(builder.function("MONTH",
+                        Integer.class, rL.get("createdAt")), Integer.parseInt(month));
+
+                predicates.add(Condition);
+            }
+
+            cr.where(predicates.toArray(Predicate[]::new));
+            cr.multiselect(builder.function("month", Integer.class, rL.get("createdAt")),
+                    builder.count(rL.get("createdAt"))
+            );
+            cr.groupBy(builder.function("month", Integer.class, rL.get("createdAt")));
+            cr.orderBy(builder.asc(rL.get("createdAt")));
+            org.hibernate.query.Query query = s.createQuery(cr);
+            return query.getResultList();
+        }
+        return null;
     }
 
 }
