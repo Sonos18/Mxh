@@ -12,6 +12,8 @@ import com.nhs.repository.PostRepository;
 import com.nhs.service.LikeService;
 import com.nhs.service.NotificationService;
 import java.io.NotSerializableException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class LikeServiceImpl implements LikeService {
         Likes like=new Likes();
         like.setPostId(post);
         like.setUserId(user);
+        like.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
         return(this.notificationService.createNotification(post,"like",user)
             && this.likeRepository.like(like));
     }

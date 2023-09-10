@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import APIS, { endpoints } from "../configs/APIS";
 import { Link, useNavigate } from "react-router-dom";
 import Loading from "../component/Loading";
+import { toast } from "react-toastify";
 
 
 const Register = () => {
@@ -14,7 +15,7 @@ const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [err, setErr] = useState(null);
     const avatar = useRef();
-    let nav=useNavigate();
+    let nav = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const change = (evt, field) => {
         setUser(current => {
@@ -24,25 +25,31 @@ const Register = () => {
     const register = (evt) => {
         evt.preventDefault();
         setIsLoading(true);
-        const process= async()=>{
-            let form =new FormData();
-            for(let field in user)
-                if (field!=="confirmPassword")
-                    form.append(field,user[field]);
-            console.info(form.get("username"));
-            form.append("avatar",avatar.current.files[0]);
-            console.info(user.email);
-            let res=await APIS.post(endpoints['register'],form);
-            console.info(user.email);
-            if(res.status===201)
-                nav("/login");
-            else
-                setErr("Failed");
+        const process = async () => {
+            try {
+                let form = new FormData();
+                for (let field in user)
+                    if (field !== "confirmPassword")
+                        form.append(field, user[field]);
+                form.append("avatar", avatar.current.files[0]);
+                let res = await APIS.post(endpoints['register'], form);
+                if (res.status === 201)
+                    nav("/login");
+                else if(res.status===500)
+                    toast.error("USERNAME ALREADY EXISTS ...");
+                else if(res.status===400)
+                    toast.error("sdhfsgf");
+            } catch (ex) {
+                toast.error("FILL OUT OR USERNAME ALREADY EXISTS ...");
+            }
+            setIsLoading(false);
+
         }
-        if(user.password===user.confirmPassword)
+        if (user.password === user.confirmPassword)
             process();
         else {
-            setErr("Password not match");
+            setIsLoading(false);
+            toast.error("PASSWORD MISMATCH ...");
         }
     }
 
@@ -69,7 +76,7 @@ const Register = () => {
                     <p className="text-xs mt-4 text-[#002D74]">
                         If you are already a member, easily register
                     </p>
-                    {err === null?"":<alert className="text-red-500">{err}</alert>}
+                    {err === null ? "" : <alert className="text-red-500">{err}</alert>}
                     <form action="" className="flex flex-col gap-4" onSubmit={register}>
                         <input value={user.username} onChange={e => change(e, "username")}
                             className="p-2 mt-6 rounded-xl border" type="text" name="username" placeholder="Username" />
@@ -133,7 +140,7 @@ const Register = () => {
                     </div>
                 </div>
             </div>
-            {isLoading?<Loading/>:null}
+            {isLoading ? <Loading /> : null}
         </section>
 
     );

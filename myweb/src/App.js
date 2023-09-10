@@ -13,6 +13,9 @@ import Auction from './pages/Auction';
 import PostPopup from './component/PostPopup';
 import AuctionDetail from './pages/AuctionDetail';
 import InputPrice from './component/InputPricePopup';
+import ChoseWinnerPopUp from './component/ChoseWinnerPopUp';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const MyUserContext = createContext();
 
@@ -37,9 +40,11 @@ function App() {
             <Route path="/auction" element={<Auction/>}/>
             <Route path="/auction/auctiondetail" element={<AuctionDetail/>}/>
             <Route path="/auctions/:id/winningBid"element={<InputPrice/>}/>
+            <Route path="/auctions/:id/choseWinner"element={<ChoseWinnerPopUp/>}/>
           </Routes>
         </div>
         <Footer />
+       <ToastContainer />
       </BrowserRouter>
     </MyUserContext.Provider>
   );

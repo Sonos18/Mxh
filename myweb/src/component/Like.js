@@ -7,7 +7,6 @@ const Like = (props) => {
   const [like, setLike] = useState(false);
   const [amount, setAmount] = useState(0);
   const handleLike = () => {
-    props.handleRequire();
     const process = async () => {
       try {
         let formData = new FormData;

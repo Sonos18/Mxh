@@ -4,13 +4,12 @@ import { MyUserContext } from "../App";
 import Notification from "../component/Notification";
 import { useEffect } from "react";
 import { authApi, endpoints } from "../configs/APIS";
-import Sidebar from "../component/Sidebar";
+
 
 const Header = ({ onSearchChange }) => {
   const [user, dispatch] = useContext(MyUserContext);
   const [activeLink, setActiveLink] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
-  const [showDashboard,setShowDashboard]=useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const navigate = useNavigate();
   const handleShowNotification = () => {
@@ -21,16 +20,14 @@ const Header = ({ onSearchChange }) => {
       navigate("/login");
 
   }
-  const handleShowDashboard=()=>{
-    setShowDashboard(!showDashboard);
-  }
   const [amount, setamount] = useState(0)
   const [notification, setNotification] = useState("");
   useEffect(() => {
     const loadNotification = async () => {
-      if (user != null) {
+      if (user !== null) {
         try {
           let { data } = await authApi().get(endpoints[`notification`]);
+          console.log(data);
           const formattedNotification = data.map(not => ({
             ...not,
             createdAt: new Date(not.createdAt).toLocaleString(),
@@ -47,18 +44,17 @@ const Header = ({ onSearchChange }) => {
         catch (ex) {
           console.error(ex);
         }
-
-
-
       }
     };
     loadNotification();
-  }, []);
+  }, [Notification]);
   const handleLinkClick = (index) => {
     setActiveLink(index);
     onSearchChange("");
   };
   const logout = () => {
+    setamount(0);
+    navigate("/login");
     dispatch({
       "type": "logout"
     })
@@ -136,16 +132,13 @@ const Header = ({ onSearchChange }) => {
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/login">Đăng nhập</Link>
                 <Link className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" to="/register">Đăng ký</Link>
               </> : <>
-                <div onClick={handleShowDashboard} className="relative block">
+                <div className="relative block">
                   <img
                     alt="profil"
                     src={user.avatar}
                     className="mx-auto object-cover rounded-full h-10 w-10"
                   />
                 </div>
-                {showDashboard&&
-                <Sidebar/>
-                }
                 <button className="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300" onClick={logout}>Đăng xuất</button>
               </>}
             </div>

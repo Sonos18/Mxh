@@ -7,15 +7,18 @@ package com.nhs.service.Impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhs.dto.AuctionDto;
+import com.nhs.dto.CommentDto;
 import com.nhs.dto.PostDto;
 import com.nhs.dto.ProductsDto;
 import com.nhs.dto.UsersDto;
 import com.nhs.pojo.Auction;
+import com.nhs.pojo.Comments;
 import com.nhs.pojo.Posts;
 import com.nhs.pojo.Products;
 import com.nhs.pojo.Users;
 import com.nhs.repository.AuctionRepository;
 import com.nhs.service.AuctionService;
+import com.nhs.service.CommentService;
 import com.nhs.service.PostService;
 import com.nhs.service.ProductService;
 import com.nhs.service.UserService;
@@ -44,6 +47,8 @@ public class AuctionServiceImpl implements AuctionService {
     private ProductService productService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CommentService commentService;
 
     @Override
     public List<AuctionDto> getAllAuctions() {
@@ -149,10 +154,34 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public AuctionDto winningBid(Map<String, String> params) {
-        Auction au=this.auctionRepository.getauAuctionByID(Integer.parseInt(params.get("id")));
+    public AuctionDto winningBid(Map<String, String> params, Users user) {
+        Auction au = this.auctionRepository.getauAuctionByID(Integer.parseInt(params.get("id")));
         au.setWinningBid(new BigDecimal(params.get("bid")));
+        CommentDto commentDto = CommentDto.builder()
+                .content(au.getWinningBid().toString())
+                .build();
+        commentDto = this.commentService.createComment(commentDto, au.getPostId().getPostId(), user);
         return this.toAuctionDto(this.auctionRepository.updateAuction(au));
+    }
+
+    @Override
+    public List<CommentDto> choseWinner(int auctionId) {
+        Auction auction = this.auctionRepository.getauAuctionByID(auctionId);
+        List<CommentDto> commentDtos=this.commentService.getAllCommentsForPost(auction.getPostId().getPostId());
+        if(commentDtos==null||commentDtos.isEmpty()){
+            return null;
+        }else{
+            if(commentDtos.size()<5) return commentDtos;
+        }
+        return commentDtos.subList(commentDtos.size() - 5, commentDtos.size());
+    }
+
+    @Override
+    public boolean winner(int auctionId, Users user) {
+        Auction auction=this.auctionRepository.getauAuctionByID(auctionId);
+        System.out.println(user.getUsername());
+        auction.setWinnerUserId(user);
+        return (this.auctionRepository.updateAuction(auction)!=null);
     }
 
 }

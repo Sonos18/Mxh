@@ -4,6 +4,7 @@ import cookie from "react-cookies";
 import { Link, Navigate } from "react-router-dom";
 import { MyUserContext } from "../App";
 import Loading from "../component/Loading";
+import { toast } from "react-toastify";
 
 
 const Login = () => {
@@ -31,10 +32,13 @@ const Login = () => {
           "type": "login",
           "payload": data
         });
+        toast.success("Login successful");
         setIsLoading(false);
 
       } catch (ex) {
+        toast.error("INCORRECT PASSWORD OR ACCOUNT");
         console.error(ex);
+        setIsLoading(false);
       }
     }
     process();

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import APIS, { authApi, endpoints } from '../configs/APIS';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from './Loading';
+import { toast } from 'react-toastify';
 
 const PostPopup = (props) => {
     const imgFile = useRef();
@@ -24,15 +25,16 @@ const PostPopup = (props) => {
                         })
                 }
                 catch (ex) {
-                    console.error(ex);
+                    toast.error("Failed")
                 }
             };
             loadPost();
         }
-    }, []);;
+    }, []);
     const handleClose = () => nav("/");
     const handleSubmit = (e) => {
         e.preventDefault();
+        setIsLoading(true);
         const process = async () => {
             let formData = new FormData();
             const hashtags = contentTamp.match(/#\w+\b/g);
@@ -40,34 +42,57 @@ const PostPopup = (props) => {
             formData.append("content", content);
             formData.append("hashtags", JSON.stringify(hashtags || [null]));
             formData.append("imgFile", imgFile.current.files[0] || null);
-            setIsLoading(true);
             //Thêm khi postId= null
-            if (postId === null) {
-                let res = await authApi().post(endpoints['posts'], formData);
-                if (res.status === 201) {
-                    props.updatePostsList(res.data);
-                    props.handleClose();
-                    nav("/");
+            try {
+                if (postId === null) {
+                    let res = await authApi().post(endpoints['posts'], formData);
+                    if (res.status === 201) {
+                        props.updatePostsList(res.data);
+                        toast.success("Create Post Successful");
+                        props.handleClose();
+                        nav("/");
+                    }
+                    else toast.error("Failed");
+                    //Update khi có id
+                } else {
+                    formData.append("id", id);
+                    let res = await authApi().post(endpoints['post-detail'](id), formData);
+                    if (res.status === 200) {
+                        toast.success("Update Post successfull");
+                        nav("/");
+                    }
+                    else toast.error("Failed");
                 }
-                else setErr("Failed");
-                //Update khi có id
-            } else {
-                formData.append("id", id);
-                let res = await authApi().post(endpoints['post-detail'](id), formData);
-                if (res.status === 200) {
-                    nav("/");
-                }
-                else setErr("Failed");
+            } catch (ex) {
+                setIsLoading(false);
+                toast.error("Bad Request");
             }
+
             setIsLoading(false);
         }
         process();
     };
 
     //Xóa
-    const handleDelete =()=>{
-        const process= async () => {
+    const handleDelete = () => {
+        const process = async () => {
             try {
+                await toast.promise(
+                    new Promise((resolve, reject) => {
+                        const confirm = window.confirm("Are you sure delete this Post");
+                        if (confirm) {
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    }),
+                    {
+                        pending: "Đang xác nhận...",
+                        success: "Xóa thành công!",
+                        error: "Lỗi xảy ra khi xóa!"
+                    }
+                );
+
                 let formData = new FormData();
                 setIsLoading(true);
                 let res = await authApi().delete(endpoints['post-detail'](id), formData);
@@ -78,8 +103,7 @@ const PostPopup = (props) => {
             }
         };
         process();
-    }
-
+    };
 
 
 

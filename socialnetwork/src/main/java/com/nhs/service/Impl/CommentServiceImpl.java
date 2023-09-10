@@ -12,12 +12,12 @@ import com.nhs.pojo.Users;
 import com.nhs.repository.CommentRepository;
 import com.nhs.repository.PostRepository;
 import com.nhs.service.CommentService;
+import com.nhs.service.NotificationService;
 import com.nhs.service.UserService;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public List<CommentDto> getAllCommentsForPost(Integer postID) {
@@ -66,8 +68,9 @@ public class CommentServiceImpl implements CommentService {
         }
         Comments comment = new Comments(commentDto.getContent(), user, post);
         comment.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
+        
         Comments c=this.commentRepository.createComment(comment);
-        if (c!=null) {
+        if (c!=null&&this.notificationService.createNotification(post,"comment",user)) {
             commentDto.setCommentId(c.getCommentId());
             commentDto.setUser(this.userService.toUsersDto(comment.getUserId()));
             commentDto.setCreateAt(comment.getCreateAt());

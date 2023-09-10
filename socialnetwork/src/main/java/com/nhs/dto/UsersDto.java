@@ -4,6 +4,9 @@
  */
 package com.nhs.dto;
 
+import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +22,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UsersDto {
     private Integer userId;
+    @NotBlank
+    @NotNull
+    @Column(unique = true)
     private String username;
     private String email;
     private String password;

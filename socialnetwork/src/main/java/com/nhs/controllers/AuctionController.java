@@ -6,6 +6,7 @@ package com.nhs.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nhs.dto.AuctionDto;
+import com.nhs.dto.CommentDto;
 import com.nhs.pojo.Auction;
 import com.nhs.pojo.Users;
 import com.nhs.service.AuctionService;
@@ -51,8 +52,8 @@ public class AuctionController {
         return new ResponseEntity<>(this.auctionService.getAllAuctions(), HttpStatus.OK);
     }
 
-    @PostMapping(path ="auction/",
-             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+    @PostMapping(path = "auction/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
     public ResponseEntity<?> createAuction(@RequestParam Map<String, String> params, @RequestPart("imgFile") MultipartFile imgFile) throws JsonProcessingException {
@@ -60,9 +61,10 @@ public class AuctionController {
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            AuctionDto auctionDto=this.auctionService.toAuctionDto(this.auctionService.createAuction(params, currentUser, imgFile));
-            if(auctionDto!=null)
+            AuctionDto auctionDto = this.auctionService.toAuctionDto(this.auctionService.createAuction(params, currentUser, imgFile));
+            if (auctionDto != null) {
                 return new ResponseEntity<>(auctionDto, HttpStatus.CREATED);
+            }
             return new ResponseEntity<>("RequestRight", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -70,7 +72,7 @@ public class AuctionController {
 
     @PutMapping("auction/{id}/")
     @CrossOrigin
-    public ResponseEntity<?> updateAuction(@RequestBody AuctionDto auctionDto,@PathVariable(value = "id") int AuctionID) {
+    public ResponseEntity<?> updateAuction(@RequestBody AuctionDto auctionDto, @PathVariable(value = "id") int AuctionID) {
         auctionDto.setAuctionId(AuctionID);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -78,24 +80,55 @@ public class AuctionController {
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
             System.out.println(auctionDto.getPostDto().getContent());
             boolean auction = this.auctionService.updateAuction(auctionDto, currentUser.getUserId());
-            return (auction?new ResponseEntity<>("Auction is update", HttpStatus.CREATED)
-                    :new ResponseEntity<>("You do not have permission to update auction", HttpStatus.CREATED));
+            return (auction ? new ResponseEntity<>("Auction is update", HttpStatus.CREATED)
+                    : new ResponseEntity<>("You do not have permission to update auction", HttpStatus.CREATED));
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-    
-    @PostMapping("/auction/{id}/winningBid/")
+
+    @PostMapping("auction/{id}/winningBid/")
     @CrossOrigin
-    public ResponseEntity<?> winningBid(@RequestParam Map<String, String> params){
+    public ResponseEntity<?> winningBid(@RequestParam Map<String, String> params) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             Users currentUser = userService.getUserByUsername(userDetails.getUsername());
-            AuctionDto au = this.auctionService.winningBid(params);
-            if(au!=null)
+            AuctionDto au = this.auctionService.winningBid(params, currentUser);
+            if (au != null) {
                 return new ResponseEntity<>(au, HttpStatus.OK);
+            }
             return new ResponseEntity<>("You do not have permission to update auction", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("auction/{id}/choseWinner/")
+    @CrossOrigin
+    public ResponseEntity<?> choseWinner(@PathVariable(value = "id") int auctionID) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users currentUser = userService.getUserByUsername(userDetails.getUsername());
+            List<CommentDto> commentDtos = this.auctionService.choseWinner(auctionID);
+            if (commentDtos != null) {
+                return new ResponseEntity<>(commentDtos, HttpStatus.OK);
+            }
+            return new ResponseEntity<>("No one Auction", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("auction/{id}/choseWinner/")
+    @CrossOrigin
+    public ResponseEntity<?> Winner(@PathVariable(value = "id") int auctionID, @RequestParam Map<String, String> params) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Users userWinner = userService.getUserByID(Integer.parseInt(params.get("userId")));
+            if (this.auctionService.winner(auctionID, userWinner)) {
+                return new ResponseEntity<>("Suscessful", HttpStatus.OK);
+            }
+            return new ResponseEntity<>("failed server", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

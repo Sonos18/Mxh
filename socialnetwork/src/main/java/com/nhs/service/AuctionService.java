@@ -6,6 +6,7 @@ package com.nhs.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nhs.dto.AuctionDto;
+import com.nhs.dto.CommentDto;
 import com.nhs.pojo.Auction;
 import com.nhs.pojo.Users;
 import java.util.List;
@@ -28,6 +29,9 @@ public interface AuctionService {
     
     AuctionDto toAuctionDto(Auction auction);
     
-    AuctionDto winningBid(Map<String, String> params);
+    AuctionDto winningBid(Map<String, String> params,Users user);
     
+    List<CommentDto> choseWinner(int auctionId);
+    
+    boolean winner(int auctionId,Users user);
 }

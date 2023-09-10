@@ -4,9 +4,9 @@ import PostPopup from "../component/PostPopup";
 import { Link, useNavigate } from "react-router-dom";
 import { MyUserContext } from "../App";
 import { useContext } from "react";
-import APIS from "../configs/APIS";
 import Like from "../component/Like";
 import Comment from "../component/Comment";
+import { toast } from "react-toastify";
 
 const Home = ({ searchTerm }) => {
   const [username, setUserName] = useState(null);
@@ -25,8 +25,7 @@ const Home = ({ searchTerm }) => {
     if (user !== null) setUserName(user.username);
     const loadPosts = async () => {
       try {
-        let e = endpoints["posts"];
-        let res = await Apis.get(e);
+        let res = await Apis.get(endpoints["posts"]);
         const formattedPosts = res.data.map(post => ({
           ...post,
           createAt: new Date(post.createAt).toLocaleString(),
@@ -39,7 +38,7 @@ const Home = ({ searchTerm }) => {
     };
 
     loadPosts();
-  }, []);
+  }, [posts]);
   //Require
   //ShowComment && LoadComment
   const handleShowComment = (postId) => {
@@ -65,10 +64,32 @@ const Home = ({ searchTerm }) => {
     loadComment(postId);
   }
   //PostPopUp
-  const handleOpen = () => {
-    if (user !== null)
-      setIsOpen(true);
-    else navigate("/login")
+  const handleOpen = async () => {
+    try {
+      if (user !== null)
+        setIsOpen(true);
+      else {
+        await toast.promise(
+          new Promise((resolve, reject) => {
+            const confirm = window.confirm("you're not logged in, do you want to sign in?");
+            if (confirm) {
+              resolve();
+            } else {
+              reject();
+            }
+          }),
+          {
+            pending: "Đang xác nhận...",
+            success: "To login...",
+            error: "An error has occurred",
+          }
+        );
+        navigate("/login")
+      }
+    }catch(ex){
+      toast.error(ex);
+    }
+    
   }
   const handleClose = () => setIsOpen(false);
   const handleRequire = () => {
@@ -87,7 +108,7 @@ const Home = ({ searchTerm }) => {
         console.info(data);
         setComments([data, ...comments]);
         setContent("");
-      }catch(ex){
+      } catch (ex) {
         console.error(ex);
       }
     }
@@ -100,9 +121,11 @@ const Home = ({ searchTerm }) => {
     if (!searchTerm) {
       setFilteredPosts(posts);
     } else {
-      const lowercaseSearchValue = searchTerm.toLowerCase();
+      const lowercaseSearchValue = searchTerm.trim().toLowerCase();
       const filtered = posts.filter((post) =>
-        post.hashtags.some((h) => h.toLowerCase().includes(lowercaseSearchValue))
+        post.hashtags.some((h) => h.toLowerCase().includes(lowercaseSearchValue)||
+        post.usersDto.username.toLowerCase().includes(lowercaseSearchValue)
+        )
       );
       setFilteredPosts(filtered);
     }
@@ -196,7 +219,7 @@ const Home = ({ searchTerm }) => {
                       <button
                         className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200"
                         type="submit"
-                        onClick={()=>handleSubmit(p.id)}
+                        onClick={() => handleSubmit(p.id)}
                       >
                         Comment
                       </button>

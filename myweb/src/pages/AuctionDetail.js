@@ -15,7 +15,8 @@ export default function AuctionDetail() {
     const [content, setContent] = useState("");
     const [nameProduct, setNameProduct] = useState("");
     const [descriptionProduct, setDescriptionProduct] = useState("");
-    let navigate=useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
+    let navigate = useNavigate();
     const handleDateStartChange = (date) => {
         setSelectedDateStart(date);
     };
@@ -24,29 +25,31 @@ export default function AuctionDetail() {
     };
     const handleSubmit = (e) => {
         e.preventDefault();
+        setIsLoading(true)
         const process = async () => {
-            try{
-                let formData= new FormData();
-                formData.append("startTime",selectedDateStart.getTime());
-                formData.append("endTime",selectedDateEnd.getTime());
-                formData.append("startingPrice",startingPrice);
-                formData.append("buyoutPrice",buyoutPricePrice);
+            try {
+                let formData = new FormData();
+                formData.append("startTime", selectedDateStart.getTime());
+                formData.append("endTime", selectedDateEnd.getTime());
+                formData.append("startingPrice", startingPrice);
+                formData.append("buyoutPrice", buyoutPricePrice);
                 const hashtags = content.match(/#\w+\b/g);
-                const content1 = content.replace(/#\w+\b/g,'');
+                const content1 = content.replace(/#\w+\b/g, '');
                 formData.append("content", content1);
                 formData.append("hashtags", JSON.stringify(hashtags || [null]));
                 formData.append("imgFile", imgFile.current.files[0] || null);
-                formData.append("name",nameProduct);
-                formData.append("description",descriptionProduct);
-                console.info(formData.get("imgFile"));
-                let res= await authApi().post(endpoints[`auction`],formData);
-                if(res.status===201)
+                formData.append("name", nameProduct);
+                formData.append("description", descriptionProduct);
+                let res = await authApi().post(endpoints[`auction`], formData);
+                if (res.status === 201)
                     navigate("/auction")
                 console.info(res.data);
-            }catch(ex){
-               console.error(ex);
+            } catch (ex) {
+                console.error(ex);
+                setIsLoading(false);
             };
         }
+        setIsLoading(false);
         process();
     }
     return (

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { authApi, endpoints } from '../configs/APIS';
 import { useNavigate, useParams } from 'react-router-dom';
+import { MyUserContext } from '../App';
 
 const InputPrice = () => {
     const [price, setPrice] = useState(null);
@@ -12,8 +13,6 @@ const InputPrice = () => {
                 let formData = new FormData();
                 formData.append("id", id);
                 formData.append("bid", price);
-                console.info(id);
-                console.info(price);
                 let { data } = await authApi().post(endpoints[`winningBid`](id), formData);
                 console.info(data)
                 nav("/auction");
