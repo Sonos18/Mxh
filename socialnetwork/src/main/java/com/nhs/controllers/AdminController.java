@@ -34,6 +34,7 @@ public class AdminController {
     public String stats(Model model, @RequestParam Map<String, String> params) {
 
         model.addAttribute("stat", AdminService.stat(params));
+        System.out.println(AdminService.stat(params));
         return "admin";
     }
 

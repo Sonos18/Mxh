@@ -31,7 +31,7 @@ import lombok.Builder;
  * @author DELL
  */
 @Entity
-@Table(name = "comments")
+@Table(name = "comments", schema = "mxh")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Comments.findAll", query = "SELECT c FROM Comments c"),

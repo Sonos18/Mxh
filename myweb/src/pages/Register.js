@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Loading from "../component/Loading";
 import { toast } from "react-toastify";
 
-
 const Register = () => {
     const [user, setUser] = useState({
         "username": "",
@@ -34,7 +33,10 @@ const Register = () => {
                 form.append("avatar", avatar.current.files[0]);
                 let res = await APIS.post(endpoints['register'], form);
                 if (res.status === 201)
+                {
                     nav("/login");
+                    toast.success("Register successfull");
+                }
                 else if(res.status===500)
                     toast.error("USERNAME ALREADY EXISTS ...");
                 else if(res.status===400)

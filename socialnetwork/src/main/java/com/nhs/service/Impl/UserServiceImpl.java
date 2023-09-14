@@ -98,6 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UsersDto toUsersDto(Users user) {
         UsersDto usersDto = UsersDto.builder()
+                .userId(user.getUserId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .avatar(user.getAvatar())

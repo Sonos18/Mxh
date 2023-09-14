@@ -61,10 +61,10 @@ const Auction = () => {
             </button>
             {myAuction &&
                 myAuction.map(auction => {
-                    let url = `/auctions/${auction.auctionId}/winningBid`;
+                    let url = `/auctions/${auction.auctionId}/winningBid/`;
                     let url2 = `/auctions/${auction.auctionId}/choseWinner`;
                     return (
-                        <div key={auction.auctionId} className="mt-2 m-auto overflow-hidden rounded-lg shadow-lg cursor-pointer h-90 w-60 md:w-1/2">
+                        <div key={auction.auctionId} className="mb-2 mt-2 m-auto overflow-hidden rounded-lg shadow-lg cursor-pointer h-90 w-60 md:w-1/2">
                             <Link to="#" className="block w-full h-full">
                                 <div className="w-full p-4 bg-white dark:bg-gray-600">
                                     <div className="flex items-center mt-4 relative">

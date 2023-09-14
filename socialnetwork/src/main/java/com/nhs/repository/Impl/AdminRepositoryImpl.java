@@ -48,10 +48,9 @@ public class AdminRepositoryImpl implements AdminRepository {
         if (params != null && year != null) {
 
             List<Predicate> predicates = new ArrayList<>();
-
+            predicates.add(builder.equal(builder.function("year", Integer.class, rC.get("createAt")),
+                    Integer.parseInt(year)));
             if (month != null && !month.isEmpty()) {
-                predicates.add(builder.equal(builder.function("year", Integer.class, rC.get("createAt")),
-                        Integer.parseInt(year)));
                 Predicate Condition = builder.lessThan(builder.function("MONTH",
                         Integer.class, rC.get("createAt")), Integer.parseInt(month));
 
@@ -62,10 +61,13 @@ public class AdminRepositoryImpl implements AdminRepository {
             cr.multiselect(builder.function("month", Integer.class, rC.get("createAt")),
                     builder.count(rC.get("createAt"))
             );
-            cr.groupBy(builder.function("month", Integer.class, rC.get("createAt")));
-            cr.orderBy(builder.asc(rC.get("createAt")));
-            org.hibernate.query.Query query = s.createQuery(cr);
-            return query.getResultList();
+            cr.groupBy(builder.function("month", Integer.class, rC.get("createAt")),
+                    builder.function("year", Integer.class, rC.get("createAt")));
+            cr.orderBy(builder.asc(builder.function("month", Integer.class, rC.get("createAt"))),
+                    builder.asc(builder.function("year", Integer.class, rC.get("createAt"))));
+
+            Query q = s.createQuery(cr);
+            return q.getResultList();
         }
         return null;
 
@@ -84,10 +86,10 @@ public class AdminRepositoryImpl implements AdminRepository {
         if (params != null && year != null) {
 
             List<Predicate> predicates = new ArrayList<>();
-
+            predicates.add(builder.equal(builder.function("year", Integer.class, rL.get("createAt")),
+                    Integer.parseInt(year)));
             if (month != null && !month.isEmpty()) {
-                predicates.add(builder.equal(builder.function("year", Integer.class, rL.get("createAt")),
-                        Integer.parseInt(year)));
+
                 Predicate Condition = builder.lessThan(builder.function("MONTH",
                         Integer.class, rL.get("createAt")), Integer.parseInt(month));
 
@@ -100,8 +102,8 @@ public class AdminRepositoryImpl implements AdminRepository {
             );
             cr.groupBy(builder.function("month", Integer.class, rL.get("createAt")));
             cr.orderBy(builder.asc(rL.get("createAt")));
-            org.hibernate.query.Query query = s.createQuery(cr);
-            return query.getResultList();
+            Query q = s.createQuery(cr);
+            return q.getResultList();
         }
         return null;
     }
@@ -119,10 +121,10 @@ public class AdminRepositoryImpl implements AdminRepository {
         if (params != null && year != null) {
 
             List<Predicate> predicates = new ArrayList<>();
-
+            predicates.add(builder.equal(builder.function("year", Integer.class, rL.get("createdAt")),
+                    Integer.parseInt(year)));
             if (month != null && !month.isEmpty()) {
-                predicates.add(builder.equal(builder.function("year", Integer.class, rL.get("createdAt")),
-                        Integer.parseInt(year)));
+
                 Predicate Condition = builder.lessThan(builder.function("MONTH",
                         Integer.class, rL.get("createdAt")), Integer.parseInt(month));
 
@@ -135,8 +137,8 @@ public class AdminRepositoryImpl implements AdminRepository {
             );
             cr.groupBy(builder.function("month", Integer.class, rL.get("createdAt")));
             cr.orderBy(builder.asc(rL.get("createdAt")));
-            org.hibernate.query.Query query = s.createQuery(cr);
-            return query.getResultList();
+            Query q = s.createQuery(cr);
+            return q.getResultList();
         }
         return null;
     }

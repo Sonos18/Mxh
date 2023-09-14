@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { authApi, endpoints } from '../configs/APIS';
 import { useNavigate, useParams } from 'react-router-dom';
 import Loading from './Loading';
+import { toast } from 'react-toastify';
 
 const ChoseWinner = () => {
     const [person, setPerson] = useState([]);
@@ -9,8 +10,8 @@ const ChoseWinner = () => {
     const nav = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
-       
         const process = async () => {
+            setIsLoading(true);
             try {
                 let { data } = await authApi().get(endpoints[`choseWinner`](id));
                 console.info(data);
@@ -19,24 +20,31 @@ const ChoseWinner = () => {
             } catch (ex) {
                 console.error(ex);
             }
+            setIsLoading(false);
         }
         process();
     }, []);
-    const handleWinner=(userId)=>{
+    const handleWinner = (userId) => {
         setIsLoading(true)
-        const process=async(userId)=>{
-            try{
-                let formData=new FormData();
-                formData.append("userId",userId)
-                let{data}=await authApi().post(endpoints[`choseWinner`](id),formData);
-            }catch(ex){
+        const process = async (userId) => {
+            try {
+                console.info(userId);
+                let formData = new FormData();
+                formData.append("userId", userId);
+                let res = await authApi().post(endpoints[`choseWinner`](id), formData);
+                if (res.status === 200) {
+                    toast.success("chose winner successfull");
+                    nav("/auction");
+                }else toast.error("Invalid user");
+            } catch (ex) {
+                setIsLoading(false);
                 console.error(ex);
             }
         }
         process(userId);
         setIsLoading(false);
     }
-    const handleClose=()=>{
+    const handleClose = () => {
         nav("/auction");
     }
     return (
@@ -70,7 +78,7 @@ const ChoseWinner = () => {
                                                         {new Date(p.createAt).toLocaleString()}
                                                     </div>
                                                     <div className="ml-2 text-xs text-gray-600 dark:text-gray-200">
-                                                        <button onClick={()=>handleWinner(p.user.userId)} className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg">
+                                                        <button onClick={() => handleWinner(p.user.userId)} className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg">
                                                             Winner
                                                         </button>
                                                     </div>

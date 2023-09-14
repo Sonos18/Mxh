@@ -47,7 +47,7 @@ const Header = ({ onSearchChange }) => {
       }
     };
     loadNotification();
-  }, [Notification]);
+  }, [user,Notification]);
   const handleLinkClick = (index) => {
     setActiveLink(index);
     onSearchChange("");

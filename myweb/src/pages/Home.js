@@ -38,9 +38,10 @@ const Home = ({ searchTerm }) => {
     };
 
     loadPosts();
-  }, [posts]);
+  }, []);
   //Require
   //ShowComment && LoadComment
+  //posts{list(post=>showcomment)}
   const handleShowComment = (postId) => {
     const loadComment = async (postId) => {
       try {
@@ -92,10 +93,6 @@ const Home = ({ searchTerm }) => {
     
   }
   const handleClose = () => setIsOpen(false);
-  const handleRequire = () => {
-    if (user === null)
-      navigate("/login");
-  }
 
   //Submit Comment
   const handleSubmit = (postId) => {
@@ -136,6 +133,7 @@ const Home = ({ searchTerm }) => {
       {filteredPosts &&
         filteredPosts.map(p => {
           let url = `/posts/${p.id}`;
+          let url2=`/posts/${p.id}/report`;
           return <>
             <div className="mt-4 mb-1 m-auto overflow-hidden rounded-lg shadow-lg cursor-pointer h-90 w-60 md:w-1/2">
               <Link to="#" class="block w-full h-full" key={p.id}>
@@ -153,18 +151,18 @@ const Home = ({ searchTerm }) => {
                       <p className="text-gray-400 dark:text-gray-300 ">{p.createAt}</p>
                     </div>
                     <div className="flex items-center absolute top-2 right-4">
+                    {user !== null && p.usersDto.username === user.username ?
                       <Link to={url} className="mr-2" >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                           className="bi bi-three-dots text-white hover:text-gray-400" viewBox="0 0 16 16">
                           <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
                         </svg>
-                      </Link>
-                      {user !== null && p.usersDto.username === user.username ?
-                        <Link to={url} className="ml-1">
+                      </Link>:
+                        <Link to={url2} className="ml-1">
                           <button className="text-white hover:text-red-700 text-2xl">
                             X
                           </button>
-                        </Link> : <></>
+                        </Link> 
                       }
                     </div>
                   </div>
@@ -194,7 +192,7 @@ const Home = ({ searchTerm }) => {
                 {p.showComment &&
                   <div className="border-2 border-t-0 mb-2">
                     {comments && comments.map(c => (
-                      <div key={c.id} className="mt-2 h-24 rounded-md w-60 border-1">
+                      <div key={c.id} className="mt-2 h-24 rounded-md w-60 overflow-hidden border-1">
                         <div className="flex flex-row items-center justify-center h-full space-x-5 ">
                           <img src={c.user.avatar} alt="avatar_user" className="w-12 h-12 rounded-full"></img>
                           <div className="flex flex-col space-y-1">

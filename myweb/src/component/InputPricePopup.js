@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { authApi, endpoints } from '../configs/APIS';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MyUserContext } from '../App';
+import { toast } from 'react-toastify';
 
 const InputPrice = () => {
     const [price, setPrice] = useState(null);
@@ -13,8 +14,10 @@ const InputPrice = () => {
                 let formData = new FormData();
                 formData.append("id", id);
                 formData.append("bid", price);
-                let { data } = await authApi().post(endpoints[`winningBid`](id), formData);
-                console.info(data)
+                let  res  = await authApi().post(endpoints[`winningBid`](id), formData);
+                if(res.sta===400)
+                    toast.error("Value entered is wrong")
+                else toast.success("successfull");
                 nav("/auction");
             } catch (ex) {
                 console.error(ex);

@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +47,8 @@ public class AuctionController {
     private AuctionService auctionService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private JavaMailSender emailSender;
 
     @GetMapping("auction/")
     @CrossOrigin
@@ -125,6 +129,11 @@ public class AuctionController {
         if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
             Users userWinner = userService.getUserByID(Integer.parseInt(params.get("userId")));
             if (this.auctionService.winner(auctionID, userWinner)) {
+                SimpleMailMessage message = new SimpleMailMessage();
+                message.setTo(userWinner.getEmail());
+                message.setSubject("Chuc mung ban");
+                message.setText("Ban da chien thang dau gia");
+                emailSender.send(message);
                 return new ResponseEntity<>("Suscessful", HttpStatus.OK);
             }
             return new ResponseEntity<>("failed server", HttpStatus.BAD_REQUEST);

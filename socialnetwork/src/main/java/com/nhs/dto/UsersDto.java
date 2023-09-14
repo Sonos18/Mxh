@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UsersDto {
+    
     private Integer userId;
     @NotBlank
     @NotNull

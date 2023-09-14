@@ -70,6 +70,7 @@ public class PostServiceImpl implements PostService {
             post.setHashtagsSet(hashtagses);
         }
         post.setContent(postDto.getContent());
+        post.setImage(postDto.getFile());
         post.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         return this.postRepository.updatePost(post);
     }

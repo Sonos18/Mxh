@@ -300,7 +300,16 @@
             <artifactId>mail</artifactId>
             <version>1.4.7</version>
         </dependency>
-      
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version> <!-- Sử dụng phiên bản tương ứng -->
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version> <!-- Sử dụng phiên bản tương ứng -->
+        </dependency>
     </dependencies>
 
     <build>

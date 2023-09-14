@@ -103,6 +103,7 @@ public class AuctionServiceImpl implements AuctionService {
         auction.setStartingPrice(new BigDecimal(params.get("buyoutPrice")));
         auction.setPostId(post);
         auction.setProductId(pro);
+        auction.setWinningBid(new BigDecimal(0));
         return this.auctionRepository.createAuction(auction);
     }
 
@@ -156,32 +157,48 @@ public class AuctionServiceImpl implements AuctionService {
     @Override
     public AuctionDto winningBid(Map<String, String> params, Users user) {
         Auction au = this.auctionRepository.getauAuctionByID(Integer.parseInt(params.get("id")));
-        au.setWinningBid(new BigDecimal(params.get("bid")));
-        CommentDto commentDto = CommentDto.builder()
-                .content(au.getWinningBid().toString())
-                .build();
-        commentDto = this.commentService.createComment(commentDto, au.getPostId().getPostId(), user);
-        return this.toAuctionDto(this.auctionRepository.updateAuction(au));
-    }
-
-    @Override
-    public List<CommentDto> choseWinner(int auctionId) {
-        Auction auction = this.auctionRepository.getauAuctionByID(auctionId);
-        List<CommentDto> commentDtos=this.commentService.getAllCommentsForPost(auction.getPostId().getPostId());
-        if(commentDtos==null||commentDtos.isEmpty()){
+        BigDecimal bid = new BigDecimal(params.get("bid"));
+        if (au.getWinningBid() != null && au.getWinningBid().compareTo(bid) > 0) {
             return null;
-        }else{
-            if(commentDtos.size()<5) return commentDtos;
         }
-        return commentDtos.subList(commentDtos.size() - 5, commentDtos.size());
-    }
+//
+//        if (au.getWinningBid() == null && au.getStartingPrice().compareTo(bid) > 0) {
+//            return null;
+//        }
+            au.setWinningBid(bid);
+            CommentDto commentDto = CommentDto.builder()
+                    .content(au.getWinningBid().toString())
+                    .build();
+            commentDto = this.commentService.createComment(commentDto, au.getPostId().getPostId(), user);
+            return this.toAuctionDto(this.auctionRepository.updateAuction(au));
+        }
 
-    @Override
-    public boolean winner(int auctionId, Users user) {
-        Auction auction=this.auctionRepository.getauAuctionByID(auctionId);
-        System.out.println(user.getUsername());
-        auction.setWinnerUserId(user);
-        return (this.auctionRepository.updateAuction(auction)!=null);
-    }
+        @Override
+        public List<CommentDto> choseWinner
+        (int auctionId
+        
+            ) {
+        Auction auction = this.auctionRepository.getauAuctionByID(auctionId);
+            List<CommentDto> commentDtos = this.commentService.getAllCommentsForPost(auction.getPostId().getPostId());
+            if (commentDtos == null || commentDtos.isEmpty()) {
+                return null;
+            } else {
+                if (commentDtos.size() < 5) {
+                    return commentDtos;
+                }
+            }
+            return commentDtos.subList(commentDtos.size() - 5, commentDtos.size());
+        }
 
-}
+        @Override
+        public boolean winner
+        (int auctionId, Users user
+        
+            ) {
+        Auction auction = this.auctionRepository.getauAuctionByID(auctionId);
+            System.out.println(user.getUsername());
+            auction.setWinnerUserId(user);
+            return (this.auctionRepository.updateAuction(auction) != null);
+        }
+
+    }

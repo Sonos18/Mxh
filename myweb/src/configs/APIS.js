@@ -18,6 +18,7 @@ export const endpoints = {
     "comment":(postId)=>`${SERVER_CONTEXT}api/posts/${postId}/comments/`,
     "winningBid":(auctionId)=>`${SERVER_CONTEXT}api/auction/${auctionId}/winningBid/`,
     "choseWinner":(auctionId)=>`${SERVER_CONTEXT}api/auction/${auctionId}/choseWinner/`,
+    "report":(postId)=>`${SERVER_CONTEXT}api/post/${postId}/report`,
 }
 
 export const authApi = () => {

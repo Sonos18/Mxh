@@ -4,6 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { authApi, endpoints } from '../configs/APIS';
 import { toFormData } from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Loading from '../component/Loading';
 
 
 export default function AuctionDetail() {
@@ -23,8 +24,7 @@ export default function AuctionDetail() {
     const handleDateEndChange = (date) => {
         setSelectedDateEnd(date);
     };
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = () => {
         setIsLoading(true)
         const process = async () => {
             try {
@@ -93,19 +93,6 @@ export default function AuctionDetail() {
                                         value={startingPrice} onChange={e => setStartingPrice(e.target.value)}
                                         className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                                         placeholder="Starting Price"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="items-center w-full p-4 space-y-2 text-gray-500 md:inline-flex md:space-y-0">
-                            <h2 className="max-w-sm mx-auto md:w-1/3">Buyout Price</h2>
-                            <div className="max-w-sm mx-auto md:w-2/3">
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={buyoutPricePrice} onChange={e => setBuyoutPrice(e.target.value)}
-                                        className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                                        placeholder="Buyout Price"
                                     />
                                 </div>
                             </div>
@@ -188,6 +175,7 @@ export default function AuctionDetail() {
                     </div>
                 </form>
             </section>
+            {isLoading ? <Loading /> : null}
         </>
 
     );
