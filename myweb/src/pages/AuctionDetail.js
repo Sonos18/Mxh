@@ -5,7 +5,7 @@ import { authApi, endpoints } from '../configs/APIS';
 import { toFormData } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../component/Loading';
-
+import cookie from "react-cookies";
 
 export default function AuctionDetail() {
     const imgFile = useRef();
@@ -28,6 +28,7 @@ export default function AuctionDetail() {
         setIsLoading(true)
         const process = async () => {
             try {
+                console.info(cookie.load("cookie"));
                 let formData = new FormData();
                 formData.append("startTime", selectedDateStart.getTime());
                 formData.append("endTime", selectedDateEnd.getTime());

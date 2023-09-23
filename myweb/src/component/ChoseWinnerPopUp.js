@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 const ChoseWinner = () => {
     const [person, setPerson] = useState([]);
-    const { id } = useParams();
+    const { id } = useParams();//duong link
     const nav = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
